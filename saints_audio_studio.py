@@ -3,6 +3,13 @@ import scipy.io.wavfile
 from transformers import AutoProcessor, BarkModel, MusicgenForConditionalGeneration
 import os
 import uuid
+from pydub import AudioSegment
+
+def normalize_audio(filepath, target_dbfs=-14.0):
+    audio = AudioSegment.from_wav(filepath)
+    change_in_dbfs = target_dbfs - audio.dBFS
+    normalized = audio.apply_gain(change_in_dbfs)
+    normalized.export(filepath, format="wav")
 
 class SaintsAudioStudio:
     def __init__(self):
@@ -16,8 +23,8 @@ class SaintsAudioStudio:
     def _load_bark(self):
         if self.bark_model is None:
             print("Loading Bark model...")
-            self.bark_processor = AutoProcessor.from_pretrained("suno/bark-small", use_safetensors=True)
-            self.bark_model = BarkModel.from_pretrained("suno/bark-small", use_safetensors=True).to(self.device)
+            self.bark_processor = AutoProcessor.from_pretrained("hexgrad/Kokoro-82M", use_safetensors=True)
+            self.bark_model = BarkModel.from_pretrained("hexgrad/Kokoro-82M", use_safetensors=True).to(self.device)
         
         if self.musicgen_model is not None:
             self.musicgen_model.to("cpu")
@@ -48,6 +55,7 @@ class SaintsAudioStudio:
         filename = f"voice_{uuid.uuid4().hex[:8]}.wav"
         filepath = os.path.join(output_dir, filename)
         scipy.io.wavfile.write(filepath, rate=sample_rate, data=audio_array)
+        normalize_audio(filepath)
         return filename
 
     def generate_bgm(self, prompt, duration_seconds, output_dir, temperature=1.0):
@@ -69,6 +77,7 @@ class SaintsAudioStudio:
         filename = f"bgm_{uuid.uuid4().hex[:8]}.wav"
         filepath = os.path.join(output_dir, filename)
         scipy.io.wavfile.write(filepath, rate=sample_rate, data=audio_array)
+        normalize_audio(filepath)
         return filename
 
 if __name__ == '__main__':

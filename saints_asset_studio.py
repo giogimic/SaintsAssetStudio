@@ -9,7 +9,7 @@ from diffusers import AutoPipelineForText2Image, StableDiffusionImg2ImgPipeline
 from rembg import remove, new_session
 
 # --- GLOBAL SETTINGS ---
-MODEL_ID = "Lykon/dreamshaper-8"
+MODEL_ID = "Onodofthenorth/SD_PixelArt_SpriteSheet_Generator"
 CAMERA_PREFIX = "" # deprecated
 CAMERA_SUFFIX = "" # deprecated
 GLOBAL_STYLE = "" # deprecated

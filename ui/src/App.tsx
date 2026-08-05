@@ -41,6 +41,7 @@ export default function App() {
   const [libraryCat, setLibraryCat] = useState('all');
   const [assets, setAssets] = useState<any[]>([]);
   const [lightboxAsset, setLightboxAsset] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Smart Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,7 +129,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchLibrary(libraryCat);
+    fetchLibrary(libraryCat, false);
   }, [libraryCat]);
 
   useEffect(() => {
@@ -142,8 +143,9 @@ export default function App() {
   }, []);
 
 
-  const fetchLibrary = async (cat: string) => {
+  const fetchLibrary = async (cat: string, silent = true) => {
     try {
+      if (!silent) setIsLoading(true);
       const res = await fetch(`/library?category=${cat}`);
       const data = await res.json();
       
@@ -154,6 +156,8 @@ export default function App() {
       setAssets(items);
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -165,7 +169,7 @@ export default function App() {
       setJobStatus((prev: any) => {
         // If a job just finished (was running, now idle or a different job), refresh library
         if (prev.current_job && prev.current_job !== data.current_job) {
-          fetchLibrary(libraryCat);
+          fetchLibrary(libraryCat, true);
         }
         return data;
       });
@@ -821,62 +825,68 @@ export default function App() {
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto max-h-[700px] p-2 pr-4">
-                    {assets.filter(asset => {
-                      const targetCat = currentFolder || libraryCat;
-                      if (asset.category !== targetCat) return false;
-                      if (searchQuery && !asset.species.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-                      if (filterElement !== 'All') {
-                        const el = asset.metadata?.element || 'None';
-                        if (el !== filterElement) return false;
-                      }
-                      return true;
-                    }).sort((a, b) => {
-                      if (sortOrder === 'A-Z') return a.species.localeCompare(b.species);
-                      if (sortOrder === 'Z-A') return b.species.localeCompare(a.species);
-                      
-                      const rarityWeights: Record<string, number> = { 'Legendary': 5, 'Epic': 4, 'Rare': 3, 'Uncommon': 2, 'Common': 1, 'None': 0 };
-                      const aWeight = rarityWeights[a.metadata?.rarity] || 0;
-                      const bWeight = rarityWeights[b.metadata?.rarity] || 0;
-                      if (sortOrder === 'Rarity (High-Low)') return bWeight - aWeight;
-                      if (sortOrder === 'Rarity (Low-High)') return aWeight - bWeight;
-                      return 0;
-                    }).map((asset, i) => (
-                      <div key={i} className={`asset-card bg-black/40 shadow-sm cursor-pointer transition-all overflow-hidden rounded-lg relative ${selectedAssets.includes(asset.species) ? 'ring-2 ring-[var(--color-saints-red)]' : ''}`} onClick={() => setLightboxAsset(asset)}>
+                    {isLoading ? (
+                      Array.from({ length: 10 }).map((_, i) => (
+                        <div key={i} className="skeleton w-full h-48 bg-black/40 border border-white/5"></div>
+                      ))
+                    ) : (
+                      assets.filter(asset => {
+                        const targetCat = currentFolder || libraryCat;
+                        if (asset.category !== targetCat) return false;
+                        if (searchQuery && !asset.species.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+                        if (filterElement !== 'All') {
+                          const el = asset.metadata?.element || 'None';
+                          if (el !== filterElement) return false;
+                        }
+                        return true;
+                      }).sort((a, b) => {
+                        if (sortOrder === 'A-Z') return a.species.localeCompare(b.species);
+                        if (sortOrder === 'Z-A') return b.species.localeCompare(a.species);
                         
-                        <div className="absolute top-2 left-2 z-10" onClick={(e) => {
-                          e.stopPropagation();
-                          if (selectedAssets.includes(asset.species)) {
-                            setSelectedAssets(selectedAssets.filter(s => s !== asset.species));
-                          } else {
-                            setSelectedAssets([...selectedAssets, asset.species]);
-                          }
-                        }}>
-                          <input type="checkbox" className="checkbox checkbox-sm border-white/50 checked:border-[var(--color-saints-red)] checked:bg-[var(--color-saints-red)] bg-black/50" checked={selectedAssets.includes(asset.species)} readOnly />
-                        </div>
+                        const rarityWeights: Record<string, number> = { 'Legendary': 5, 'Epic': 4, 'Rare': 3, 'Uncommon': 2, 'Common': 1, 'None': 0 };
+                        const aWeight = rarityWeights[a.metadata?.rarity] || 0;
+                        const bWeight = rarityWeights[b.metadata?.rarity] || 0;
+                        if (sortOrder === 'Rarity (High-Low)') return bWeight - aWeight;
+                        if (sortOrder === 'Rarity (Low-High)') return aWeight - bWeight;
+                        return 0;
+                      }).map((asset, i) => (
+                        <div key={i} className={`asset-card bg-black/40 shadow-sm cursor-pointer transition-all overflow-hidden rounded-lg relative ${selectedAssets.includes(asset.species) ? 'ring-2 ring-[var(--color-saints-red)]' : ''}`} onClick={() => setLightboxAsset(asset)}>
+                          
+                          <div className="absolute top-2 left-2 z-10" onClick={(e) => {
+                            e.stopPropagation();
+                            if (selectedAssets.includes(asset.species)) {
+                              setSelectedAssets(selectedAssets.filter(s => s !== asset.species));
+                            } else {
+                              setSelectedAssets([...selectedAssets, asset.species]);
+                            }
+                          }}>
+                            <input type="checkbox" className="checkbox checkbox-sm border-white/50 checked:border-[var(--color-saints-red)] checked:bg-[var(--color-saints-red)] bg-black/50" checked={selectedAssets.includes(asset.species)} readOnly />
+                          </div>
 
-                        <figure className="bg-black/60 p-4 h-32 flex items-center justify-center border-b border-[rgba(255,255,255,0.05)]">
-                          {asset.category === 'audio' ? (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded p-2">
-                              <audio controls src={asset.default} className="w-full max-w-[200px] h-10" />
+                          <figure className="bg-black/60 p-4 h-32 flex items-center justify-center border-b border-[rgba(255,255,255,0.05)]">
+                            {asset.category === 'audio' ? (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded p-2">
+                                <audio controls src={asset.default} className="w-full max-w-[200px] h-10" />
+                              </div>
+                            ) : asset.category === 'quests' ? (
+                              <div className="w-full h-full p-2 overflow-hidden text-[10px] font-mono text-gray-400 leading-tight">
+                                <div className="font-bold text-white mb-1 truncate">{asset.quest_data?.title || 'Quest File'}</div>
+                                {asset.quest_data?.description?.substring(0, 100)}...
+                              </div>
+                            ) : (
+                              <img src={asset.default || asset.baby} alt={asset.species} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
+                            )}
+                          </figure>
+                          <div className="p-3">
+                            <h3 className="font-bold text-xs truncate mb-1 text-gray-200">{asset.species.replace(/_/g, ' ')}</h3>
+                            <div className="flex gap-1 flex-wrap">
+                              <span className="badge badge-outline border-[rgba(255,255,255,0.2)] text-[10px] text-gray-400 p-1 h-auto leading-none">{asset.category}</span>
+                              {asset.metadata?.element && asset.metadata.element !== 'None' && <span className="badge badge-outline border-[var(--color-saints-red)] text-[var(--color-saints-red)] text-[10px] p-1 h-auto leading-none">{asset.metadata.element}</span>}
                             </div>
-                          ) : asset.category === 'quests' ? (
-                            <div className="w-full h-full p-2 overflow-hidden text-[10px] font-mono text-gray-400 leading-tight">
-                              <div className="font-bold text-white mb-1 truncate">{asset.quest_data?.title || 'Quest File'}</div>
-                              {asset.quest_data?.description?.substring(0, 100)}...
-                            </div>
-                          ) : (
-                            <img src={asset.default || asset.baby} alt={asset.species} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
-                          )}
-                        </figure>
-                        <div className="p-3">
-                          <h3 className="font-bold text-xs truncate mb-1 text-gray-200">{asset.species.replace(/_/g, ' ')}</h3>
-                          <div className="flex gap-1 flex-wrap">
-                            <span className="badge badge-outline border-[rgba(255,255,255,0.2)] text-[10px] text-gray-400 p-1 h-auto leading-none">{asset.category}</span>
-                            {asset.metadata?.element && asset.metadata.element !== 'None' && <span className="badge badge-outline border-[var(--color-saints-red)] text-[var(--color-saints-red)] text-[10px] p-1 h-auto leading-none">{asset.metadata.element}</span>}
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                   
                   {selectedAssets.length > 0 && (
@@ -1007,13 +1017,26 @@ export default function App() {
                   {lightboxAsset.metadata?.element && lightboxAsset.metadata.element !== 'None' && <span className="badge badge-outline border-[var(--color-saints-red)] text-[var(--color-saints-red)]">{lightboxAsset.metadata.element}</span>}
                 </div>
               </div>
-              <button className="btn btn-sm btn-error" onClick={async () => {
-                if (window.confirm(`Are you sure you want to delete ${lightboxAsset.species}?`)) {
-                  await fetch('/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ species: lightboxAsset.species, category: lightboxAsset.category }) });
-                  setLightboxAsset(null);
-                  fetchLibrary(libraryCat);
-                }
-              }}>DELETE ASSET</button>
+              <div className="flex gap-2">
+                {lightboxAsset.category === 'quests' && (
+                  <button className="btn btn-sm btn-outline btn-success" onClick={() => {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lightboxAsset.quest_data, null, 2));
+                    const downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href", dataStr);
+                    downloadAnchorNode.setAttribute("download", lightboxAsset.species + "_quest.json");
+                    document.body.appendChild(downloadAnchorNode);
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                  }}>Export JSON</button>
+                )}
+                <button className="btn btn-sm btn-error" onClick={async () => {
+                  if (window.confirm(`Are you sure you want to delete ${lightboxAsset.species}?`)) {
+                    await fetch('/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ species: lightboxAsset.species, category: lightboxAsset.category }) });
+                    setLightboxAsset(null);
+                    fetchLibrary(libraryCat);
+                  }
+                }}>DELETE ASSET</button>
+              </div>
             </div>
             
             <div className="bg-black/50 p-6 flex items-center justify-center border border-white/5 min-h-[400px]">

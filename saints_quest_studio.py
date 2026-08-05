@@ -7,7 +7,7 @@ class SaintsQuestStudio:
     def __init__(self):
         print("Initializing Saints Quest Studio...")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model_id = "microsoft/Phi-3-mini-4k-instruct"
+        self.model_id = "microsoft/Phi-4-mini"
         self.tokenizer = None
         self.model = None
 
@@ -34,14 +34,14 @@ class SaintsQuestStudio:
                     trust_remote_code=True
                 )
 
-    def generate_quest(self, master_lore, theme, difficulty, max_tokens=500, temperature=0.7, top_p=0.9):
+    def generate_quest(self, master_lore, theme, category, difficulty, max_tokens=500, temperature=0.7, top_p=0.9):
         self._load_model()
         
         system_prompt = f"""You are a professional RPG Quest Designer. 
 You MUST adhere strictly to the following Master Lore: 
 {master_lore}
 
-Generate a new quest matching this theme: {theme} and difficulty: {difficulty}.
+Generate a new {category} matching this theme: {theme} and difficulty: {difficulty}.
 Return ONLY a valid JSON object with the following schema:
 {{
     "title": "Quest Title",
@@ -92,7 +92,8 @@ if __name__ == '__main__':
     studio = SaintsQuestStudio()
     result = studio.generate_quest(
         job['master_lore'], 
-        job['theme'], 
+        job['theme'],
+        job.get('category', 'Side Quest'),
         job['difficulty'],
         max_tokens=job.get('max_tokens', 500),
         temperature=job.get('temperature', 0.7),

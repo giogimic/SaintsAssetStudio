@@ -222,10 +222,10 @@ def system_status():
     status = {
         "dependencies": {},
         "models": {
-            "suno/bark-small": False,
+            "hexgrad/Kokoro-82M": False,
             "facebook/musicgen-small": False,
-            "microsoft/Phi-3-mini-4k-instruct": False,
-            "Lykon/dreamshaper-8": False
+            "microsoft/Phi-4-mini": False,
+            "Onodofthenorth/SD_PixelArt_SpriteSheet_Generator": False
         }
     }
     
