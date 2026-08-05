@@ -60,3 +60,13 @@ The first time you generate assets, the required HuggingFace models will be down
 - **Backend:** Python `Flask` with `threading`, `queue`, and global subprocess log capturing
 - **AI Core:** `diffusers`, `transformers`, `torch`
 - **Post-Processing Pipeline:** `rembg` (U-2-Net), `Pillow` (Lanczos resampling)
+
+## ⚖️ Attribution & Licensing
+
+This project is licensed under the **GNU General Public License v3 (GPLv3)**. 
+
+### Tuxemon Attribution
+Certain structural templates and placeholder images used in the Asset Library UI and Image Generation Pipeline are sourced from **[Tuxemon](https://github.com/Tuxemon/Tuxemon)**, an open-source monster capture RPG. 
+These images are used strictly as structural and layout references for our Image-to-Image ML pipeline because their open-source pixel art style fits our technical needs. Tuxemon is not the goal or final product of this pipeline.
+
+In accordance with their licensing, this project adheres to the GPLv3 license.

@@ -40,23 +40,31 @@ class AssetStudio:
             ).to(self.device)
             if self.device == "cuda": self.i2i_pipe.enable_attention_slicing()
 
-    def fetch_template(self, category):
+    def get_local_template(self, category):
+        import glob
+        import random
         try:
             if category in ["creatures", "world-monsters"]:
-                url = "https://raw.githubusercontent.com/Tuxemon/Tuxemon/development/mods/tuxemon/gfx/sprites/battle/aardart-sheet.png"
+                search_path = r"C:\Users\Matth\OneDrive\Desktop\Tuxemon-0.5-rc1\mods\tuxemon\gfx\sprites\battle\*sheet.png"
             elif category == "npc":
-                url = "https://raw.githubusercontent.com/Tuxemon/Tuxemon/development/mods/tuxemon/gfx/sprites/battle/trainer_f-sheet.png"
+                search_path = r"C:\Users\Matth\OneDrive\Desktop\Tuxemon-0.5-rc1\mods\tuxemon\gfx\sprites\player\*.png"
             else:
                 return None
                 
-            response = requests.get(url, stream=True)
-            response.raise_for_status()
+            files = glob.glob(search_path)
+            if not files:
+                print(f"Warning: No local template files found for {category} at {search_path}")
+                return None
+                
+            img_path = random.choice(files)
+            print(f"Using local template: {os.path.basename(img_path)}")
+            
             # Convert to RGB with a pure white background
-            img = Image.open(io.BytesIO(response.content)).convert("RGBA")
+            img = Image.open(img_path).convert("RGBA")
             bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
             return Image.alpha_composite(bg, img).convert("RGB")
         except Exception as e:
-            print(f"Warning: Failed to fetch template for {category}: {e}")
+            print(f"Warning: Failed to fetch local template for {category}: {e}")
             return None
 
     def process_ow_sprite(self, img):
@@ -173,7 +181,7 @@ class AssetStudio:
                 if category == "environment" or category == "ui":
                     battle_image = image
                 else:
-                    template_img = self.fetch_template(category)
+                    template_img = self.get_local_template(category)
                     if template_img:
                         print("Using img2img layout template for battle sprite...")
                         self._load_i2i()

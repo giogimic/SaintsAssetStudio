@@ -770,7 +770,7 @@ export default function App() {
                     return (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
                         <div className="bg-success/10 p-5 rounded-xl border border-success/30 flex flex-col">
-                           <h4 className="font-bold text-success mb-3 text-lg flex items-center gap-2">✅ Ideal Tuxemon Outcome</h4>
+                           <h4 className="font-bold text-success mb-3 text-lg flex items-center gap-2">✅ Ideal Structural Reference (Tuxemon)</h4>
                            <div className="flex-1 bg-white/50 rounded-lg flex items-center justify-center p-4 mb-3 border border-success/20">
                               <img src={info.goodUrl} alt="good" className="h-24 object-contain [image-rendering:pixelated]" onError={(e: any) => e.target.src = 'https://raw.githubusercontent.com/Tuxemon/Tuxemon/development/mods/tuxemon/gfx/sprites/battle/aardart-sheet.png'} />
                            </div>
