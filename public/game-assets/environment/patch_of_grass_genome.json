@@ -1,0 +1,25 @@
+{
+    "species": "patch_of_grass",
+    "category": "environment",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "patch of grass prop",
+    "locked_features": "standard design",
+    "stages": {
+        "default": {
+            "growth": "static environment prop, standard design"
+        }
+    },
+    "generation_meta": {
+        "seed": 924663,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

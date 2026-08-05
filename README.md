@@ -1,56 +1,62 @@
 # Saints Asset Studio
 
-**Saints Asset Studio** is the internal asset production pipeline used to generate, validate, organize, and export creatures and game assets for [Saints Online](https://github.com/your-profile/saints-online). 
+**Saints Asset Studio** is the internal asset production pipeline used to generate, validate, organize, and export creatures and game assets for **[Saints Online](https://saintsgaming.net)**. 
 
-It focuses on consistent multi-stage creature evolution, structured metadata, and game-ready asset production rather than general-purpose image generation.
+It focuses on consistent multi-stage creature evolution, structured metadata, and game-ready asset production using an advanced React UI and local HuggingFace ML pipelines.
 
 ---
 
 ## 🛠 The Ecosystem
 
 Building an MMO requires more than just a game engine—it requires infrastructure. Saints Asset Studio is part of the broader Saints development ecosystem:
-- **Saints Online**: The core MMO game client and server.
+- **[Saints Online](https://saintsgaming.net)**: The core MMO game client and server.
 - **Saints Editor**: Custom world-building and data mapping tools.
-- **Saints Asset Studio**: The automated pipeline handling repetitive creative workflows.
+- **Saints Asset Studio**: The automated AI-assisted pipeline handling repetitive creative workflows.
 
 ## 🚀 Core Features
 
-This is not a simple wrapper around Stable Diffusion. It is a purpose-built workflow tool designed to enforce consistency and automatically output production-ready files:
+This is a purpose-built workflow tool designed to enforce consistency and automatically output production-ready game files:
 
-- **Structured Genome System**: Creatures are defined by a JSON-based "Genome" (combining Elemental Typing, Temperament, and Rarity) rather than free-form prompting, eliminating style drift.
+- **Structured Generation System**: Generate Image, Audio, and Quests using strict forms and parameters rather than free-form prompting.
+- **Advanced Model Configurations**: Tweak Hyper-parameters directly from the UI (CFG Scale, Inference Steps, Temperature, Max Tokens, etc.).
 - **Lifecycle Evolution**: A single generation job outputs a biologically cohesive 3-stage lifecycle (Baby → Adult → Elder).
-- **Engine-Compliant Export**: Automatically strips backgrounds, crops to exact transparency bounds, and rescales exports to strict Babylon.js engine specifications:
-  - `public/game-assets/creatures/*-ow.png` (96px height Overworld Billboard)
-  - `public/game-assets/monster/battle/*-sheet.png` (1024x1024 Battle UI Sheet)
-- **Background Rendering Queue**: A non-blocking Web UI allows artists/devs to rapidly queue dozens of generation jobs while monitoring live rendering status.
-- **Bestiary Library Manager**: A built-in graphical interface to organize, review, and instantly prune rejected assets from the filesystem.
+- **Engine-Compliant Export**: Automatically strips backgrounds, crops to exact transparency bounds, and rescales exports to strict engine specifications.
+- **Background Rendering Queue**: A non-blocking Web UI allows artists/devs to rapidly queue dozens of generation jobs while monitoring live rendering status and terminal logs.
+- **Bestiary Library Manager**: A built-in graphical interface to organize, filter by rarity/element, and bulk-delete rejected assets from the filesystem.
 
 ## ⚙️ Installation & Setup
 
-We provide an automated setup script that builds the virtual environment, installs the pipeline dependencies, and downloads the required AI models.
+We provide a separated modern architecture: a React + Vite Frontend and a Flask + PyTorch Backend.
 
 ### Prerequisites
 - **Python 3.10+**
+- **Node.js** (v18+)
 - **Nvidia GPU** (Recommended 8GB+ VRAM)
-- CUDA Toolkit (for PyTorch `cu118` acceleration)
+- CUDA Toolkit 11.8+ (for PyTorch acceleration)
 
-### Windows Quickstart (PowerShell)
+### 1. Backend Setup (Windows PowerShell)
+```powershell
+# Create the virtual environment and install dependencies
+.\setup.ps1
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/saints-asset-studio.git
-   cd saints-asset-studio
-   ```
-2. Run the setup script:
-   ```powershell
-   .\setup.ps1
-   ```
-3. Open your browser to `http://localhost:5000`
+# Start the Flask Backend (runs on port 5000)
+.\.venv_cuda\Scripts\python.exe app.py
+```
 
-> **Note:** The first time `setup.ps1` runs, it will pre-cache several gigabytes of model weights from the HuggingFace Hub to ensure the Web UI remains highly responsive.
+### 2. Frontend Setup (Vite / React)
+Open a new terminal window for the frontend.
+```powershell
+cd ui
+npm install
+npm run dev
+```
+
+### 3. Launch
+Open your browser to the local Vite URL (typically `http://localhost:5173`).
+The first time you generate assets, the required HuggingFace models will be downloaded and cached automatically.
 
 ## 🏗 Technical Stack
-- **Frontend:** HTML5, CSS (Glassmorphism), Vanilla JS (Live Polling)
-- **Backend:** Python `Flask` with `threading` and `queue` management
+- **Frontend:** React, Vite, TailwindCSS + DaisyUI (Glassmorphism & Neon Themes)
+- **Backend:** Python `Flask` with `threading`, `queue`, and global subprocess log capturing
 - **AI Core:** `diffusers`, `transformers`, `torch`
 - **Post-Processing Pipeline:** `rembg` (U-2-Net), `Pillow` (Lanczos resampling)

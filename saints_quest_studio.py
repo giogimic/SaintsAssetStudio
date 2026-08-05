@@ -34,7 +34,7 @@ class SaintsQuestStudio:
                     trust_remote_code=True
                 )
 
-    def generate_quest(self, master_lore, theme, difficulty):
+    def generate_quest(self, master_lore, theme, difficulty, max_tokens=500, temperature=0.7, top_p=0.9):
         self._load_model()
         
         system_prompt = f"""You are a professional RPG Quest Designer. 
@@ -62,8 +62,9 @@ Do NOT output any markdown, only raw JSON."""
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=500,
-                temperature=0.7,
+                max_new_tokens=max_tokens,
+                temperature=temperature,
+                top_p=top_p,
                 do_sample=True,
                 pad_token_id=self.tokenizer.eos_token_id
             )
@@ -89,7 +90,14 @@ if __name__ == '__main__':
         job = json.load(f)
         
     studio = SaintsQuestStudio()
-    result = studio.generate_quest(job['master_lore'], job['theme'], job['difficulty'])
+    result = studio.generate_quest(
+        job['master_lore'], 
+        job['theme'], 
+        job['difficulty'],
+        max_tokens=job.get('max_tokens', 500),
+        temperature=job.get('temperature', 0.7),
+        top_p=job.get('top_p', 0.9)
+    )
     
     with open(job['output_file'], 'w') as f:
         json.dump(result, f, indent=4)

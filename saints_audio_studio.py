@@ -33,13 +33,13 @@ class SaintsAudioStudio:
             self.bark_model.to("cpu")
         self.musicgen_model.to(self.device)
 
-    def generate_voice(self, text, output_dir):
+    def generate_voice(self, text, output_dir, temperature=1.0):
         self._load_bark()
         inputs = self.bark_processor(text, return_tensors="pt").to(self.device)
         
         # We wrap in torch.no_grad() for memory efficiency
         with torch.no_grad():
-            audio_array = self.bark_model.generate(**inputs, do_sample=True)
+            audio_array = self.bark_model.generate(**inputs, do_sample=True, temperature=temperature)
             
         audio_array = audio_array.cpu().numpy().squeeze()
         sample_rate = self.bark_model.generation_config.sample_rate
@@ -50,7 +50,7 @@ class SaintsAudioStudio:
         scipy.io.wavfile.write(filepath, rate=sample_rate, data=audio_array)
         return filename
 
-    def generate_bgm(self, prompt, duration_seconds, output_dir):
+    def generate_bgm(self, prompt, duration_seconds, output_dir, temperature=1.0):
         self._load_musicgen()
         inputs = self.musicgen_processor(
             text=[prompt],
@@ -60,7 +60,7 @@ class SaintsAudioStudio:
         
         tokens = int(duration_seconds * 50) # roughly 50 tokens = 1 second
         with torch.no_grad():
-            audio_values = self.musicgen_model.generate(**inputs, max_new_tokens=tokens)
+            audio_values = self.musicgen_model.generate(**inputs, max_new_tokens=tokens, do_sample=True, temperature=temperature)
             
         audio_array = audio_values[0, 0].cpu().numpy()
         sample_rate = self.musicgen_model.config.audio_encoder.sampling_rate
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     studio = SaintsAudioStudio()
     
     if job['type'] == 'voice':
-        studio.generate_voice(job['prompt'], job['output_dir'])
+        studio.generate_voice(job['prompt'], job['output_dir'], temperature=job.get('temperature', 1.0))
     elif job['type'] == 'bgm':
-        studio.generate_bgm(job['prompt'], job.get('duration_seconds', 10), job['output_dir'])
+        studio.generate_bgm(job['prompt'], job.get('duration_seconds', 10), job['output_dir'], temperature=job.get('temperature', 1.0))
 

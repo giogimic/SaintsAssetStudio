@@ -24,6 +24,27 @@ def get_python_exe():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(script_dir, ".venv_cuda", "Scripts", "python.exe"), script_dir
 
+backend_logs = ["[System] Backend Initialized."]
+
+def log_to_backend(msg):
+    print(msg)
+    backend_logs.append(msg)
+    if len(backend_logs) > 1000:
+        backend_logs.pop(0)
+
+def run_and_log(cmd, cwd, prefix):
+    import subprocess
+    process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace')
+    for line in iter(process.stdout.readline, ''):
+        line = line.strip()
+        if line:
+            # specifically for tqdm bars, they might come with carriage returns, but strip handles some.
+            # to avoid spamming the log with 100 progress updates, we'll only log lines that don't look like pure tqdm noise
+            # or just log them all (might be spammy, but useful for user)
+            log_to_backend(f"[{prefix}] {line}")
+    process.wait()
+    return process.returncode
+
 def image_worker():
     python_exe, script_dir = get_python_exe()
     script_path = os.path.join(script_dir, "saints_asset_studio.py")
@@ -39,13 +60,13 @@ def image_worker():
             with open(temp_json, 'w') as f:
                 json.dump(job["genome_data"], f)
 
-            print(f"[Image Worker] Generating {species}...")
-            result = subprocess.run([python_exe, script_path, temp_json], cwd=script_dir)
-            if result.returncode == 0:
-                print(f"[Image Worker] Success: {species}")
+            log_to_backend(f"[Image Worker] Generating {species}...")
+            returncode = run_and_log([python_exe, script_path, temp_json], cwd=script_dir, prefix="Image Worker")
+            if returncode == 0:
+                log_to_backend(f"[Image Worker] Success: {species}")
                 status_state["completed_jobs"].insert(0, {"species": species, "status": "Success", "type": "image"})
             else:
-                print(f"[Image Worker] Failed: {species}")
+                log_to_backend(f"[Image Worker] Failed: {species}")
                 status_state["completed_jobs"].insert(0, {"species": species, "status": "Failed", "error": "See terminal output for details", "type": "image"})
             if os.path.exists(temp_json): os.remove(temp_json)
         except Exception as e:
@@ -69,14 +90,13 @@ def audio_worker():
             with open(temp_json, 'w') as f:
                 json.dump(job, f)
                 
-            print(f"[Audio Worker] Generating {job['type']}...")
-            result = subprocess.run([python_exe, script_path, temp_json], cwd=script_dir)
-            
-            if result.returncode == 0:
-                print(f"[Audio Worker] Success")
-                status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Success", "type": "audio"})
+            log_to_backend(f"[Audio Worker] Generating audio ({job['type']})...")
+            returncode = run_and_log([python_exe, script_path, temp_json], cwd=script_dir, prefix="Audio Worker")
+            if returncode == 0:
+                log_to_backend(f"[Audio Worker] Success")
+                status_state["completed_jobs"].insert(0, {"species": "Audio Job", "status": "Success", "type": "audio"})
             else:
-                print(f"[Audio Worker] Failed")
+                log_to_backend(f"[Audio Worker] Failed")
                 status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Failed", "error": "See terminal output for details", "type": "audio"})
             if os.path.exists(temp_json): os.remove(temp_json)
         except Exception as e:
@@ -98,14 +118,13 @@ def quest_worker():
             with open(temp_json, 'w') as f:
                 json.dump(job, f)
                 
-            print(f"[Quest Worker] Generating {job['theme']}...")
-            result = subprocess.run([python_exe, script_path, temp_json], cwd=script_dir)
-            
-            if result.returncode == 0:
-                print(f"[Quest Worker] Success")
-                status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Success", "type": "quest"})
+            log_to_backend(f"[Quest Worker] Generating quest...")
+            returncode = run_and_log([python_exe, script_path, temp_json], cwd=script_dir, prefix="Quest Worker")
+            if returncode == 0:
+                log_to_backend(f"[Quest Worker] Success")
+                status_state["completed_jobs"].insert(0, {"species": "Quest Job", "status": "Success", "type": "quest"})
             else:
-                print(f"[Quest Worker] Failed")
+                log_to_backend(f"[Quest Worker] Failed")
                 status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Failed", "error": "See terminal output for details", "type": "quest"})
             if os.path.exists(temp_json): os.remove(temp_json)
         except Exception as e:
@@ -253,14 +272,13 @@ def download_model_route():
     
     def worker():
         try:
-            print(f"[Download Worker] Downloading {model_id}...")
-            # We don't capture_output so tqdm streams to terminal
-            result = subprocess.run([python_exe, os.path.join(script_dir, 'download_model.py'), '--model', model_id], cwd=script_dir)
-            if result.returncode == 0:
-                print(f"[Download Worker] Success: {model_id}")
+            log_to_backend(f"[Download Worker] Downloading {model_id}...")
+            returncode = run_and_log([python_exe, os.path.join(script_dir, 'download_model.py'), '--model', model_id], cwd=script_dir, prefix="Download Worker")
+            if returncode == 0:
+                log_to_backend(f"[Download Worker] Success: {model_id}")
                 status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Success", "type": "download"})
             else:
-                print(f"[Download Worker] Failed: {model_id}")
+                log_to_backend(f"[Download Worker] Failed: {model_id}")
                 status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Failed", "error": "See terminal output for details", "type": "download"})
         except Exception as e:
             status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Failed", "error": str(e), "type": "download"})
@@ -270,6 +288,15 @@ def download_model_route():
             
     threading.Thread(target=worker, daemon=True).start()
     return jsonify({"status": "queued", "model_id": model_id})
+
+@app.route('/api/logs', methods=['GET', 'POST'])
+def handle_logs():
+    if request.method == 'POST':
+        data = request.json
+        if 'msg' in data:
+            log_to_backend(f"[Frontend] {data['msg']}")
+        return jsonify({"status": "ok"})
+    return jsonify({"logs": backend_logs})
 
 
 
@@ -292,6 +319,12 @@ def queue_job():
     material = data.get('material', 'None')
     monster_class = data.get("monster_class", "None")
     habitat = data.get("habitat", "None")
+    
+    # Advanced Params
+    inference_steps = int(data.get("inference_steps", 30))
+    guidance_scale = float(data.get("guidance_scale", 8.5))
+    seed = data.get("seed", -1)
+    negative_prompt = data.get("negative_prompt", "")
     
     # Validation / Fallbacks
     if element not in ELEMENT_DICTIONARY: element = "None"
@@ -414,7 +447,13 @@ def queue_job():
         },
         "core_identity": core_identity,
         "locked_features": locked_features,
-        "stages": stages
+        "stages": stages,
+        "advanced_params": {
+            "inference_steps": inference_steps,
+            "guidance_scale": guidance_scale,
+            "seed": seed,
+            "negative_prompt": negative_prompt
+        }
     }
     
     job_data = {
@@ -433,13 +472,16 @@ def queue_audio():
     prompt = data.get('prompt')
     duration = data.get('duration_seconds', 10)
     
+    temperature = float(data.get('temperature', 1.0))
+    
     if not prompt: return jsonify({"error": "Prompt required"}), 400
     
     output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'public', 'game-assets', 'audio')
     audio_queue.put({
-        "type": audio_type,
+        "type": job_type,
         "prompt": prompt,
         "duration_seconds": duration,
+        "temperature": temperature,
         "output_dir": output_dir
     })
     return jsonify({"status": "queued"})
@@ -459,8 +501,15 @@ def queue_quest():
     quest_id = f"quest_{uuid.uuid4().hex[:8]}"
     output_file = os.path.join(output_dir, f"{quest_id}.json")
     
+    max_tokens = int(data.get('max_tokens', 100))
+    temperature = float(data.get('temperature', 0.7))
+    top_p = float(data.get('top_p', 0.9))
+
     quest_queue.put({
         "master_lore": master_lore,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
         "theme": theme,
         "difficulty": difficulty,
         "output_file": output_file

@@ -33,6 +33,7 @@ export default function App() {
   const [filterElement, setFilterElement] = useState('All');
   const [sortOrder, setSortOrder] = useState('A-Z');
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
   const categoryInfo = {
     creatures: {
@@ -86,16 +87,43 @@ export default function App() {
   const [biome, setBiome] = useState('None');
   const [material, setMaterial] = useState('None');
 
+  // Advanced Form State
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [inferenceSteps, setInferenceSteps] = useState(30);
+  const [guidanceScale, setGuidanceScale] = useState(8.5);
+  const [seed, setSeed] = useState(''); // empty string means random
+  const [negativePrompt, setNegativePrompt] = useState('');
+  const [temperature, setTemperature] = useState(1.0);
+  const [maxTokens, setMaxTokens] = useState(500);
+  const [topP, setTopP] = useState(0.9);
+
+  // Terminal State
+  const [logFilter, setLogFilter] = useState('All');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [logs, setLogs] = useState<string[]>(['> System ready. Awaiting input.']);
+
+  const fetchLogs = async () => {
+    try {
+      const res = await fetch('/api/logs');
+      const data = await res.json();
+      if (data.logs) {
+        setLogs(data.logs);
+      }
+    } catch(e) {}
+  };
 
   useEffect(() => {
     fetchLibrary(libraryCat);
   }, [libraryCat]);
 
   useEffect(() => {
-    const interval = setInterval(fetchStatus, 3000);
+    const interval = setInterval(() => {
+      fetchStatus();
+      fetchLogs();
+    }, 1500); // 1.5 seconds to track downloads better
     fetchSystemStatus();
+    fetchLogs();
     return () => clearInterval(interval);
   }, []);
 
@@ -163,8 +191,40 @@ export default function App() {
     }
   };
 
-  const logMessage = (msg: string) => {
-    setLogs(prev => [...prev, `> ${msg}`]);
+  const logMessage = async (msg: string) => {
+    try {
+      await fetch('/api/logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ msg })
+      });
+      fetchLogs();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm(`Delete ${selectedAssets.length} selected assets?`)) return;
+    
+    // We loop and delete since the backend supports single delete currently
+    for (const species of selectedAssets) {
+      const asset = assets.find(a => a.species === species);
+      if (asset) {
+        try {
+          await fetch('/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ species: asset.species, category: asset.category })
+          });
+        } catch(e) {
+          console.error(e);
+        }
+      }
+    }
+    
+    setSelectedAssets([]);
+    fetchLibrary(libraryCat);
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -179,7 +239,11 @@ export default function App() {
       rarity, element, temperament,
       monster_class: monsterClass,
       habitat, char_class: charClass,
-      biome, material
+      biome, material,
+      inference_steps: inferenceSteps,
+      guidance_scale: guidanceScale,
+      seed: seed ? parseInt(seed) : -1,
+      negative_prompt: negativePrompt
     };
 
     try {
@@ -211,7 +275,7 @@ export default function App() {
       const res = await fetch('/queue_audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: audioType, prompt: audioPrompt, duration_seconds: audioDuration })
+        body: JSON.stringify({ type: audioType, prompt: audioPrompt, duration_seconds: audioDuration, temperature })
       });
       const data = await res.json();
       if (data.status === 'queued') {
@@ -234,7 +298,7 @@ export default function App() {
       const res = await fetch('/queue_quest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ master_lore: questLore, theme: questTheme, difficulty: questDiff })
+        body: JSON.stringify({ master_lore: questLore, theme: questTheme, difficulty: questDiff, max_tokens: maxTokens, temperature: temperature, top_p: topP })
       });
       const data = await res.json();
       if (data.status === 'queued') {
@@ -475,6 +539,28 @@ export default function App() {
                   </div>
                 )}
               </div>
+              <div className="collapse collapse-arrow bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] mb-4">
+                <input type="checkbox" checked={showAdvanced} onChange={(e) => setShowAdvanced(e.target.checked)} /> 
+                <div className="collapse-title text-sm font-medium text-gray-300">Advanced Settings</div>
+                <div className="collapse-content space-y-4">
+                  <div className="form-control">
+                    <label className="label"><span className="label-text text-gray-300">Inference Steps ({inferenceSteps})</span></label>
+                    <input type="range" min="10" max="50" value={inferenceSteps} onChange={e => setInferenceSteps(parseInt(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text text-gray-300">Guidance Scale (CFG: {guidanceScale})</span></label>
+                    <input type="range" min="1.0" max="15.0" step="0.5" value={guidanceScale} onChange={e => setGuidanceScale(parseFloat(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text text-gray-300">Seed (Empty = Random)</span></label>
+                    <input type="text" className="input input-bordered input-sm bg-black/30" placeholder="Random" value={seed} onChange={e => setSeed(e.target.value)} />
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text text-gray-300">Negative Prompt Additions</span></label>
+                    <input type="text" className="input input-bordered input-sm bg-black/30" placeholder="ugly, blurry, cropped" value={negativePrompt} onChange={e => setNegativePrompt(e.target.value)} />
+                  </div>
+                </div>
+              </div>
 
               <button type="submit" className="btn btn-neon w-full btn-lg font-heading tracking-widest" disabled={isSubmitting}>
                 {isSubmitting ? <span className="loading loading-spinner text-[var(--color-saints-red)]"></span> : 'QUEUE IMAGE JOB'}
@@ -498,6 +584,16 @@ export default function App() {
                     <div className="text-center text-xs mt-1 text-gray-400">{audioDuration}s</div>
                   </div>
                 )}
+                <div className="collapse collapse-arrow bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] mb-4">
+                  <input type="checkbox" checked={showAdvanced} onChange={(e) => setShowAdvanced(e.target.checked)} /> 
+                  <div className="collapse-title text-sm font-medium text-gray-300">Advanced Settings</div>
+                  <div className="collapse-content">
+                    <div className="form-control">
+                      <label className="label"><span className="label-text text-gray-300">Temperature ({temperature})</span></label>
+                      <input type="range" min="0.1" max="2.0" step="0.1" value={temperature} onChange={e => setTemperature(parseFloat(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                    </div>
+                  </div>
+                </div>
                 
                 <button type="submit" className="btn btn-neon w-full btn-lg font-heading tracking-widest mt-4" disabled={isSubmitting}>
                   {isSubmitting ? <span className="loading loading-spinner text-[var(--color-saints-red)]"></span> : 'QUEUE AUDIO JOB'}
@@ -526,6 +622,24 @@ export default function App() {
                     <option value="Legendary">Legendary</option>
                   </select>
                 </div>
+                <div className="collapse collapse-arrow bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] mb-4">
+                  <input type="checkbox" checked={showAdvanced} onChange={(e) => setShowAdvanced(e.target.checked)} /> 
+                  <div className="collapse-title text-sm font-medium text-gray-300">Advanced Settings</div>
+                  <div className="collapse-content space-y-4">
+                    <div className="form-control">
+                      <label className="label"><span className="label-text text-gray-300">Max Tokens ({maxTokens})</span></label>
+                      <input type="range" min="100" max="2000" step="100" value={maxTokens} onChange={e => setMaxTokens(parseInt(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                    </div>
+                    <div className="form-control">
+                      <label className="label"><span className="label-text text-gray-300">Temperature ({temperature})</span></label>
+                      <input type="range" min="0.1" max="2.0" step="0.1" value={temperature} onChange={e => setTemperature(parseFloat(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                    </div>
+                    <div className="form-control">
+                      <label className="label"><span className="label-text text-gray-300">Top-P ({topP})</span></label>
+                      <input type="range" min="0.1" max="1.0" step="0.05" value={topP} onChange={e => setTopP(parseFloat(e.target.value))} className="range range-xs" style={{"--range-shdw": "var(--color-saints-red)"} as any} />
+                    </div>
+                  </div>
+                </div>
                 
                 <button type="submit" className="btn btn-neon w-full btn-lg font-heading tracking-widest mt-4" disabled={isSubmitting}>
                   {isSubmitting ? <span className="loading loading-spinner text-[var(--color-saints-red)]"></span> : 'QUEUE QUEST JOB'}
@@ -542,14 +656,25 @@ export default function App() {
           {/* QUEUE STATUS */}
           <div className="glass-panel shadow-xl h-fit">
             <div className="card-body p-6 flex flex-row justify-between items-center">
-              <div>
+              <div className="flex-1 min-w-[250px] pr-4 border-r border-[rgba(255,255,255,0.05)] mr-4">
                 <h3 className="text-xl font-bold font-heading tracking-widest text-white mb-1 flex items-center gap-2">
                   CLUSTER QUEUE
-                  {jobStatus.current_job ? <span className="loading loading-ring loading-sm text-[var(--color-saints-red)]"></span> : <div className="w-2 h-2 rounded-full bg-gray-600"></div>}
+                  {jobStatus.current_job ? <span className="loading loading-ring loading-sm text-[var(--color-saints-red)]"></span> : <div className="w-2 h-2 rounded-full bg-gray-600 shadow-[0_0_5px_rgba(255,255,255,0.2)]"></div>}
                 </h3>
                 <p className="text-sm text-gray-400">
                   {jobStatus.pending_count} pending job(s)
                 </p>
+                {/* Visual Queue Progression */}
+                <div className="mt-4 flex gap-1 items-center h-2">
+                   {!jobStatus.current_job && jobStatus.pending_count === 0 && (
+                      <div className="h-full w-full bg-black/40 rounded flex items-center justify-center text-[8px] text-gray-600 tracking-widest font-heading">IDLE</div>
+                   )}
+                   {jobStatus.current_job && <div className="h-full flex-1 bg-[var(--color-saints-red)] shadow-[0_0_10px_var(--color-saints-red)] rounded animate-pulse" title="Processing..."></div>}
+                   {Array.from({length: Math.min(jobStatus.pending_count, 10)}).map((_, i) => (
+                      <div key={i} className="h-full w-8 bg-white/20 rounded" title="Pending"></div>
+                   ))}
+                   {jobStatus.pending_count > 10 && <span className="text-xs text-gray-500 ml-2 font-mono">+{jobStatus.pending_count - 10}</span>}
+                </div>
               </div>
 
               <div className="flex gap-4">
@@ -658,6 +783,8 @@ export default function App() {
                     <select className="select select-sm select-glass" value={sortOrder} onChange={e => setSortOrder(e.target.value)}>
                       <option value="A-Z">A-Z</option>
                       <option value="Z-A">Z-A</option>
+                      <option value="Rarity (High-Low)">Rarity (High-Low)</option>
+                      <option value="Rarity (Low-High)">Rarity (Low-High)</option>
                     </select>
                   </div>
 
@@ -673,9 +800,28 @@ export default function App() {
                       return true;
                     }).sort((a, b) => {
                       if (sortOrder === 'A-Z') return a.species.localeCompare(b.species);
-                      return b.species.localeCompare(a.species);
+                      if (sortOrder === 'Z-A') return b.species.localeCompare(a.species);
+                      
+                      const rarityWeights: Record<string, number> = { 'Legendary': 5, 'Epic': 4, 'Rare': 3, 'Uncommon': 2, 'Common': 1, 'None': 0 };
+                      const aWeight = rarityWeights[a.metadata?.rarity] || 0;
+                      const bWeight = rarityWeights[b.metadata?.rarity] || 0;
+                      if (sortOrder === 'Rarity (High-Low)') return bWeight - aWeight;
+                      if (sortOrder === 'Rarity (Low-High)') return aWeight - bWeight;
+                      return 0;
                     }).map((asset, i) => (
-                      <div key={i} className="asset-card bg-black/40 shadow-sm cursor-pointer transition-all overflow-hidden rounded-lg" onClick={() => setLightboxAsset(asset)}>
+                      <div key={i} className={`asset-card bg-black/40 shadow-sm cursor-pointer transition-all overflow-hidden rounded-lg relative ${selectedAssets.includes(asset.species) ? 'ring-2 ring-[var(--color-saints-red)]' : ''}`} onClick={() => setLightboxAsset(asset)}>
+                        
+                        <div className="absolute top-2 left-2 z-10" onClick={(e) => {
+                          e.stopPropagation();
+                          if (selectedAssets.includes(asset.species)) {
+                            setSelectedAssets(selectedAssets.filter(s => s !== asset.species));
+                          } else {
+                            setSelectedAssets([...selectedAssets, asset.species]);
+                          }
+                        }}>
+                          <input type="checkbox" className="checkbox checkbox-sm border-white/50 checked:border-[var(--color-saints-red)] checked:bg-[var(--color-saints-red)] bg-black/50" checked={selectedAssets.includes(asset.species)} readOnly />
+                        </div>
+
                         <figure className="bg-black/60 p-4 h-32 flex items-center justify-center border-b border-[rgba(255,255,255,0.05)]">
                           <img src={asset.default || asset.baby} alt={asset.species} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
                         </figure>
@@ -689,6 +835,17 @@ export default function App() {
                       </div>
                     ))}
                   </div>
+                  
+                  {selectedAssets.length > 0 && (
+                    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 glass-panel border border-[var(--color-saints-red)] px-6 py-3 rounded-full flex items-center gap-4 shadow-[0_0_20px_rgba(255,42,42,0.4)] animate-in slide-in-from-bottom-10 fade-in">
+                      <span className="font-bold text-white font-mono">{selectedAssets.length} Selected</span>
+                      <div className="w-[1px] h-6 bg-white/20"></div>
+                      <button className="btn btn-sm btn-ghost hover:bg-white/10" onClick={() => setSelectedAssets([])}>Cancel</button>
+                      <button className="btn btn-sm btn-error text-white font-bold tracking-widest" onClick={handleBulkDelete}>
+                        DELETE ALL
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -721,9 +878,22 @@ export default function App() {
           <h3 className="font-heading tracking-widest text-[var(--color-saints-red)] font-bold">TERMINAL</h3>
           <button className="btn btn-sm btn-ghost btn-circle" onClick={() => setShowTerminal(false)}>✕</button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 font-mono text-xs flex flex-col gap-1">
-          {logs.map((log, i) => <div key={i} className="text-gray-300">{log}</div>)}
-          <div className="opacity-50 mt-2">Terminal Ready_</div>
+        <div className="p-2 border-b border-[rgba(255,255,255,0.05)] bg-black/60 flex gap-2">
+          <button className={`btn btn-xs ${logFilter === 'All' ? 'bg-white/10 text-white' : 'btn-ghost text-gray-500 hover:text-gray-300'}`} onClick={() => setLogFilter('All')}>All</button>
+          <button className={`btn btn-xs ${logFilter === 'Success' ? 'bg-green-500/20 text-green-400' : 'btn-ghost text-green-700 hover:text-green-500'}`} onClick={() => setLogFilter('Success')}>Success</button>
+          <button className={`btn btn-xs ${logFilter === 'Error' ? 'bg-red-500/20 text-red-400' : 'btn-ghost text-red-700 hover:text-red-500'}`} onClick={() => setLogFilter('Error')}>Error</button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 font-mono text-xs flex flex-col gap-1 font-[consolas]" 
+             ref={(el) => { if (el && showTerminal) el.scrollTop = el.scrollHeight; }}>
+          {logs.filter(log => {
+             if (logFilter === 'All') return true;
+             if (logFilter === 'Success' && (log.includes('Success') || log.includes('Success!'))) return true;
+             if (logFilter === 'Error' && (log.includes('ERROR') || log.includes('FAILURE') || log.includes('Failed'))) return true;
+             return false;
+          }).map((log, i) => (
+             <div key={i} className={`${(log.includes('ERROR') || log.includes('FAILURE') || log.includes('Failed')) ? 'text-red-400 font-bold' : (log.includes('Success') || log.includes('Success!')) ? 'text-green-400' : 'text-gray-300'}`}>{log}</div>
+          ))}
+          <div className="opacity-50 mt-2 animate-pulse text-[var(--color-saints-red)]">_</div>
         </div>
       </div>
 

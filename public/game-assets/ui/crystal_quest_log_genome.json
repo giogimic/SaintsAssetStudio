@@ -1,0 +1,25 @@
+{
+    "species": "crystal_quest_log",
+    "category": "ui",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "Crystal"
+    },
+    "core_identity": "Crystal quest log ui element",
+    "locked_features": "glowing crystals, jagged minerals, translucent gems, magical resonance",
+    "stages": {
+        "default": {
+            "growth": "static UI element, glowing crystals, jagged minerals, translucent gems, magical resonance"
+        }
+    },
+    "generation_meta": {
+        "seed": 287206,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

@@ -122,8 +122,15 @@ class AssetStudio:
         
         stages_to_run = ["baby", "adult", "elder"] if paradigm == "lifecycle" else ["default"]
         
-        steps = 25 if self.device == "cuda" else 15
-        seed = torch.randint(0, 1000000, (1,)).item()
+        advanced = genome.get('advanced_params', {})
+        steps = advanced.get('inference_steps', 25 if self.device == "cuda" else 15)
+        guidance = advanced.get('guidance_scale', 8.5)
+        seed = advanced.get('seed', -1)
+        if seed == -1: seed = torch.randint(0, 1000000, (1,)).item()
+        custom_neg = advanced.get('negative_prompt', "")
+        
+        # Base negative prompt overrides
+        base_neg = custom_neg if custom_neg else NEGATIVE_PROMPT
         
         prev_ow_image = None
         prev_battle_image = None
@@ -138,15 +145,15 @@ class AssetStudio:
             if category == "environment":
                 ow_prompt = f"(16-bit pixel art, GBA retro sprite:1.4), (single isolated texture of {species_name}, top-down view:1.3), {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
                 battle_prompt = ow_prompt
-                env_neg = f"{NEGATIVE_PROMPT}, (fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
+                env_neg = f"{base_neg}, (fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
             elif category == "ui":
                 ow_prompt = f"(16-bit pixel art UI asset, retro RPG menu frame:1.4), (single isolated flat UI element, {species_name}:1.3), {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
                 battle_prompt = ow_prompt
-                env_neg = f"{NEGATIVE_PROMPT}, (characters, people, monsters, fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
+                env_neg = f"{base_neg}, (characters, people, monsters, fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
             elif category == "npc":
                 ow_prompt = f"(16-bit pixel art, GBA retro sprite:1.4), (single isolated character sprite facing forward, top-down perspective, standing still:1.3), A {species_name}. {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
                 battle_prompt = f"(16-bit pixel art, visual novel portrait:1.4), (large detailed character portrait, holding a pokeball, trainer battle pose:1.3), A {species_name}. {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                env_neg = NEGATIVE_PROMPT
+                env_neg = base_neg
             else:
                 if stage == "baby" or paradigm == "single":
                     subject = f"A {stage if stage != 'default' else ''} {species_name}. {dna} Growth stage features: {stage_growth}."
@@ -154,7 +161,7 @@ class AssetStudio:
                     subject = f"An evolved {stage} {species_name}. Exactly the same species. Maintain identical colors and markings. Increase age and maturity. Growth stage features: {stage_growth}. {dna}"
                 ow_prompt = f"(16-bit pixel art, GBA pokemon sprite:1.4), (single isolated character sprite facing forward, top-down perspective, standing still:1.3), {subject}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
                 battle_prompt = f"(16-bit pixel art, pokemon sprite:1.4), (large detailed front-facing monster battle sprite, classic RPG monster design:1.3), {subject}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                env_neg = NEGATIVE_PROMPT
+                env_neg = base_neg
 
             print(f"Prompt: {ow_prompt}")
             
@@ -162,7 +169,7 @@ class AssetStudio:
             
             if stage == "baby" or stage == "default" or prev_ow_image is None:
                 self._load_t2i()
-                image = self.t2i_pipe(ow_prompt, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=8.5, generator=generator).images[0]
+                image = self.t2i_pipe(ow_prompt, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=guidance, generator=generator).images[0]
                 if category == "environment" or category == "ui":
                     battle_image = image
                 else:
@@ -170,16 +177,16 @@ class AssetStudio:
                     if template_img:
                         print("Using img2img layout template for battle sprite...")
                         self._load_i2i()
-                        battle_image = self.i2i_pipe(battle_prompt, image=template_img, strength=0.85, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=8.5, generator=generator).images[0]
+                        battle_image = self.i2i_pipe(battle_prompt, image=template_img, strength=0.85, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=guidance, generator=generator).images[0]
                     else:
-                        battle_image = self.t2i_pipe(battle_prompt, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=8.5, generator=generator).images[0]
+                        battle_image = self.t2i_pipe(battle_prompt, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=guidance, generator=generator).images[0]
             else:
                 self._load_i2i()
-                image = self.i2i_pipe(ow_prompt, image=prev_ow_image, strength=0.7, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=8.5, generator=generator).images[0]
+                image = self.i2i_pipe(ow_prompt, image=prev_ow_image, strength=0.7, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=guidance, generator=generator).images[0]
                 if category == "environment" or category == "ui":
                     battle_image = image
                 else:
-                    battle_image = self.i2i_pipe(battle_prompt, image=prev_battle_image, strength=0.7, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=8.5, generator=generator).images[0]
+                    battle_image = self.i2i_pipe(battle_prompt, image=prev_battle_image, strength=0.7, negative_prompt=env_neg, num_inference_steps=steps, guidance_scale=guidance, generator=generator).images[0]
             
             prev_ow_image = image
             prev_battle_image = battle_image

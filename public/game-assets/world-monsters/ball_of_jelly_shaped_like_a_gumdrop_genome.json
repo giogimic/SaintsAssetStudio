@@ -1,0 +1,25 @@
+{
+    "species": "ball_of_jelly_shaped_like_a_gumdrop",
+    "category": "world-monsters",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "ball of jelly shaped like a gumdrop wild monster",
+    "locked_features": "standard design",
+    "stages": {
+        "default": {
+            "growth": "fully developed wild monster, standard design"
+        }
+    },
+    "generation_meta": {
+        "seed": 153491,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

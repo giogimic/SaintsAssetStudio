@@ -1,0 +1,31 @@
+{
+    "species": "ball_of_jelly_shaped_like_a_gumdrop",
+    "category": "creatures",
+    "paradigm": "lifecycle",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "ball of jelly shaped like a gumdrop creature",
+    "locked_features": "composed of normal typical form, standard physical traits, classic RPG monster design",
+    "stages": {
+        "baby": {
+            "growth": "small, cute, undeveloped version, , , round proportions"
+        },
+        "adult": {
+            "growth": "large, fully developed, composed of normal typical form, standard physical traits, classic RPG monster design, combat ready stance"
+        },
+        "elder": {
+            "growth": "massive, towering, ancient, radiating intense power, composed of normal typical form, standard physical traits, classic RPG monster design, majestic and imposing"
+        }
+    },
+    "generation_meta": {
+        "seed": 307344,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}
