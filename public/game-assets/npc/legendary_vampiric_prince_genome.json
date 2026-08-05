@@ -1,0 +1,25 @@
+{
+    "species": "legendary_vampiric_prince",
+    "category": "npc",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Legendary",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Legendary  vampiric prince character",
+    "locked_features": "god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting",
+    "stages": {
+        "default": {
+            "growth": "fully developed, god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting"
+        }
+    },
+    "generation_meta": {
+        "seed": 334022,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

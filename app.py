@@ -248,8 +248,8 @@ def download_model_route():
         return jsonify({"error": "No model_id provided"}), 400
         
     job_name = f"Download_{model_id.replace('/', '_')}"
-    jobStatus.current_job = job_name
-    jobStatus.pending_count += 1
+    status_state["current_job"] = job_name
+    status_state["pending_count"] += 1
     
     def worker():
         try:
@@ -265,8 +265,8 @@ def download_model_route():
         except Exception as e:
             status_state["completed_jobs"].insert(0, {"species": job_name, "status": "Failed", "error": str(e), "type": "download"})
         finally:
-            jobStatus.current_job = None
-            jobStatus.pending_count = max(0, jobStatus.pending_count - 1)
+            status_state["current_job"] = None
+            status_state["pending_count"] = max(0, status_state["pending_count"] - 1)
             
     threading.Thread(target=worker, daemon=True).start()
     return jsonify({"status": "queued", "model_id": model_id})

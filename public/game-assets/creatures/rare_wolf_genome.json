@@ -1,0 +1,31 @@
+{
+    "species": "rare_wolf",
+    "category": "creatures",
+    "paradigm": "lifecycle",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Rare",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Rare   wolf creature",
+    "locked_features": "composed of normal typical form, standard physical traits, classic RPG monster design, complex design, glowing accents, ornamental details, vibrant colors",
+    "stages": {
+        "baby": {
+            "growth": "small, cute, undeveloped version, , complex design, glowing accents, ornamental details, vibrant colors, round proportions"
+        },
+        "adult": {
+            "growth": "large, fully developed, composed of normal typical form, standard physical traits, classic RPG monster design, complex design, glowing accents, ornamental details, vibrant colors, combat ready stance"
+        },
+        "elder": {
+            "growth": "massive, towering, ancient, radiating intense power, composed of normal typical form, standard physical traits, classic RPG monster design, complex design, glowing accents, ornamental details, vibrant colors, majestic and imposing"
+        }
+    },
+    "generation_meta": {
+        "seed": 735251,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

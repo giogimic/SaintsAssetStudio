@@ -1,0 +1,31 @@
+{
+    "species": "epic_wolf",
+    "category": "creatures",
+    "paradigm": "lifecycle",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Epic",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Epic   wolf creature",
+    "locked_features": "composed of normal typical form, standard physical traits, classic RPG monster design, highly detailed, dramatic aura, floating particles, ornate armor or patterns",
+    "stages": {
+        "baby": {
+            "growth": "small, cute, undeveloped version, , highly detailed, dramatic aura, floating particles, ornate armor or patterns, round proportions"
+        },
+        "adult": {
+            "growth": "large, fully developed, composed of normal typical form, standard physical traits, classic RPG monster design, highly detailed, dramatic aura, floating particles, ornate armor or patterns, combat ready stance"
+        },
+        "elder": {
+            "growth": "massive, towering, ancient, radiating intense power, composed of normal typical form, standard physical traits, classic RPG monster design, highly detailed, dramatic aura, floating particles, ornate armor or patterns, majestic and imposing"
+        }
+    },
+    "generation_meta": {
+        "seed": 220272,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

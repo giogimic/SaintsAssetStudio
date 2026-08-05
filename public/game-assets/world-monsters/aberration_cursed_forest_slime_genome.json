@@ -1,0 +1,25 @@
+{
+    "species": "aberration_cursed_forest_slime",
+    "category": "world-monsters",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Legendary",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Cursed Forest Aberration slime wild monster",
+    "locked_features": "eldritch aberration, tentacles, multiple eyes, alien, twisted biology, adapted for twisted roots, dead leaves, shadow magic, gloomy, eerie",
+    "stages": {
+        "default": {
+            "growth": "fully developed wild monster, eldritch aberration, tentacles, multiple eyes, alien, twisted biology, adapted for twisted roots, dead leaves, shadow magic, gloomy, eerie"
+        }
+    },
+    "generation_meta": {
+        "seed": 192441,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

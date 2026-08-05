@@ -1,0 +1,31 @@
+{
+    "species": "legendary_slime",
+    "category": "creatures",
+    "paradigm": "lifecycle",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Legendary",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Legendary   slime creature",
+    "locked_features": "composed of normal typical form, standard physical traits, classic RPG monster design, god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting",
+    "stages": {
+        "baby": {
+            "growth": "small, cute, undeveloped version, , god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting, round proportions"
+        },
+        "adult": {
+            "growth": "large, fully developed, composed of normal typical form, standard physical traits, classic RPG monster design, god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting, combat ready stance"
+        },
+        "elder": {
+            "growth": "massive, towering, ancient, radiating intense power, composed of normal typical form, standard physical traits, classic RPG monster design, god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting, majestic and imposing"
+        }
+    },
+    "generation_meta": {
+        "seed": 836426,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}
