@@ -10,7 +10,7 @@ It focuses on consistent multi-stage creature evolution, structured metadata, an
 
 Building an MMO requires more than just a game engine—it requires infrastructure. Saints Asset Studio is part of the broader Saints development ecosystem:
 - **[Saints Online](https://saintsgaming.net)**: The core MMO game client and server.
-- **Saints Editor**: Custom world-building and data mapping tools.
+- **Saints Studio**: Custom world-building and data mapping tools.
 - **Saints Asset Studio**: The automated AI-assisted pipeline handling repetitive creative workflows.
 
 ## 🚀 Core Features
