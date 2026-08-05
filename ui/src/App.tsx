@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 const REQUIREMENTS: Record<string, string> = {
   creatures: `Generates a full 3-stage biological evolution line. Output: 96px Overworld crops (creatures/{slug}-{stage}-ow.png) & 1024x1024 Battle Sheets (monster/battle/{slug}-{stage}-sheet.png)`,
   'world-monsters': `Generates a single-stage wild monster for encounters. Output: 96px Overworld crop (world-monsters/{slug}-ow.png) & 1024x1024 Battle Sheet (monster/battle/{slug}-sheet.png)`,
-  npc: `Generates a single custom character portrait & sprite. Output: 96px Overworld crop (npc/{slug}-ow.png) & 1024x1024 Portrait (npc/portrait/{slug}-sheet.png) (Kept out of world space)`,
+  npc: `Generates a 3x4 walking animation sprite sheet. Output: 96px Overworld crop (npc/{slug}-ow.png) & 3x4 Sprite Sheet (npc/portrait/{slug}-sheet.png)`,
   environment: `Generates a static environment prop. Output: Static Overworld crop (environment/{slug}-ow.png) & 1024x1024 Scene Art (environment/portrait/{slug}-sheet.png)`,
   ui: `Generates UI elements and decorative frames.`
 };
@@ -66,10 +66,10 @@ export default function App() {
     },
     npc: {
       title: 'Characters & NPCs',
-      description: 'Generates humanoid characters, trainers, and townspeople.',
+      description: 'Generates 3x4 walking animation sprite sheets for humanoid characters.',
       goodUrl: 'https://raw.githubusercontent.com/Tuxemon/Tuxemon/development/mods/tuxemon/gfx/sprites/battle/trainer_f-sheet.png',
-      goodDesc: 'Facing forward, readable face, strict pixel grid.',
-      badDesc: 'Deformed proportions, extra arms, photorealism.'
+      goodDesc: '3x4 grid walking animation, readable face, strict pixel grid.',
+      badDesc: 'Deformed proportions, extra arms, photorealism, missing frames.'
     },
     environment: {
       title: 'Environment Props',
