@@ -113,6 +113,37 @@ class AssetStudio:
         sprite.paste(img_no_bg, (offset_x, offset_y))
         return sprite
 
+    def process_sheet_sprite(self, img):
+        img_no_bg = remove(img, session=self.bg_session, alpha_matting=False)
+        img_no_bg = img_no_bg.convert("RGBA")
+        datas = img_no_bg.getdata()
+        new_data = [(r, g, b, 255) if a > 128 else (0, 0, 0, 0) for r, g, b, a in datas]
+        img_no_bg.putdata(new_data)
+        
+        # Do NOT crop the bounding box, keep the original mathematical grid intact
+        return img_no_bg
+
+    def slice_sprite_sheet(self, img, out_dir, cols=3, rows=4):
+        width, height = img.size
+        cell_w = width // cols
+        cell_h = height // rows
+        
+        os.makedirs(out_dir, exist_ok=True)
+        frame_idx = 0
+        
+        for r in range(rows):
+            for c in range(cols):
+                left = c * cell_w
+                top = r * cell_h
+                right = left + cell_w
+                bottom = top + cell_h
+                
+                cell = img.crop((left, top, right, bottom))
+                
+                cell_filename = f"frame_{frame_idx:02d}.png"
+                cell.save(os.path.join(out_dir, cell_filename))
+                frame_idx += 1
+
     def generate_lifecycle(self, genome_path, variant_suffix=None):
         with open(genome_path, 'r') as f:
             genome = json.load(f)
@@ -220,9 +251,18 @@ class AssetStudio:
             ow_sprite = self.quantize_image(ow_sprite, colors=32)
             ow_sprite.save(os.path.join(ow_dir, f"{slug}-ow.png"))
             
-            battle_sprite = self.process_battle_sprite(battle_image)
-            battle_sprite = self.quantize_image(battle_sprite, colors=32)
-            battle_sprite.save(os.path.join(battle_dir, f"{slug}-sheet.png"))
+            if category in ["environment", "ui"]:
+                battle_sprite = self.process_battle_sprite(battle_image)
+                battle_sprite = self.quantize_image(battle_sprite, colors=32)
+                battle_sprite.save(os.path.join(battle_dir, f"{slug}-sheet.png"))
+            else:
+                battle_sprite = self.process_sheet_sprite(battle_image)
+                battle_sprite = self.quantize_image(battle_sprite, colors=32)
+                sheet_path = os.path.join(battle_dir, f"{slug}-sheet.png")
+                battle_sprite.save(sheet_path)
+                
+                frames_dir = os.path.join(battle_dir, "frames", slug)
+                self.slice_sprite_sheet(battle_sprite, frames_dir, cols=3, rows=4)
             
         print("\nSaving genome metadata...")
         genome['generation_meta'] = {"seed": seed, "model": MODEL_ID, "style_token": GLOBAL_STYLE}
