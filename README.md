@@ -21,7 +21,9 @@ This is a purpose-built workflow tool designed to enforce consistency and automa
 - **Advanced Model Configurations**: Tweak Hyper-parameters directly from the UI (CFG Scale, Inference Steps, Temperature, Max Tokens, etc.).
 - **Lifecycle Evolution**: A single generation job outputs a biologically cohesive 3-stage lifecycle (Baby → Adult → Elder).
 - **Engine-Compliant Export**: Automatically strips backgrounds, crops to exact transparency bounds, and rescales exports to strict engine specifications.
-- **Background Rendering Queue**: A non-blocking Web UI allows artists/devs to rapidly queue dozens of generation jobs while monitoring live rendering status and terminal logs.
+- **Quest JSON Exporter**: Export generated lore directly into structured `.json` files.
+- **Audio Normalization**: BGM and Voice lines are dynamically calculated and normalized to `-14 LUFS` via `pydub`.
+- **Background Rendering Queue**: A non-blocking Web UI with live loading skeletons allows artists/devs to rapidly queue dozens of generation jobs while monitoring live rendering status and terminal logs.
 - **Bestiary Library Manager**: A built-in graphical interface to organize, filter by rarity/element, and bulk-delete rejected assets from the filesystem.
 
 ## ⚙️ Installation & Setup
@@ -58,8 +60,11 @@ The first time you generate assets, the required HuggingFace models will be down
 ## 🏗 Technical Stack
 - **Frontend:** React, Vite, TailwindCSS + DaisyUI (Glassmorphism & Neon Themes)
 - **Backend:** Python `Flask` with `threading`, `queue`, and global subprocess log capturing
-- **AI Core:** `diffusers`, `transformers`, `torch`
-- **Post-Processing Pipeline:** `rembg` (U-2-Net), `Pillow` (Lanczos resampling)
+- **AI Core Models:** 
+  - **Sprites:** `Onodofthenorth/SD_PixelArt_SpriteSheet_Generator` (Maintains 16-bit mathematically aligned grids)
+  - **Audio/Voice:** `hexgrad/Kokoro-82M` (Native CPU-friendly lightweight TTS)
+  - **Quests/Lore:** `microsoft/Phi-4-mini` (3.8B LLM optimized for structured JSON and reasoning)
+- **Post-Processing Pipeline:** `rembg` (U-2-Net), `Pillow` (Lanczos resampling), `pydub` (Audio Normalization)
 
 ## ⚖️ Attribution & Licensing
 
