@@ -13,7 +13,7 @@ MODEL_ID = "Lykon/dreamshaper-8"
 CAMERA_PREFIX = "" # deprecated
 CAMERA_SUFFIX = "" # deprecated
 GLOBAL_STYLE = "" # deprecated
-NEGATIVE_PROMPT = "(3d render:1.4), (oil painting:1.3), (gradient:1.4), (soft shading:1.4), (photorealism:1.4), (anti-aliasing:1.5), background scene, scenery, ground, shadows"
+NEGATIVE_PROMPT = "(anti-aliasing:1.4), soft gradients, muddy colors, photorealism, 3D render, smooth shading, high resolution, pastel colors, washed out, isometric, deformed proportions, asymmetrical grid, missing frames, blurry, noisy, messy pixels, modern digital art, watercolor"
 
 class AssetStudio:
     def __init__(self):
@@ -66,6 +66,15 @@ class AssetStudio:
         except Exception as e:
             print(f"Warning: Failed to fetch local template for {category}: {e}")
             return None
+
+    def quantize_image(self, img, colors=32):
+        if img.mode != 'RGBA':
+            img = img.convert('RGBA')
+        alpha = img.getchannel('A')
+        quantized = img.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=colors)
+        quantized = quantized.convert('RGBA')
+        quantized.putalpha(alpha)
+        return quantized
 
     def process_ow_sprite(self, img):
         img_no_bg = remove(img, session=self.bg_session, alpha_matting=False)
@@ -151,25 +160,27 @@ class AssetStudio:
             stage_growth = genome['stages'][stage].get('growth', '')
             
             if category == "environment":
-                ow_prompt = f"(16-bit pixel art, GBA retro sprite:1.4), (single isolated texture of {species_name}, top-down view:1.3), {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                battle_prompt = ow_prompt
+                subject = f"texture of {species_name}, top-down view. {dna} Features: {stage_growth}"
                 env_neg = f"{base_neg}, (fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
+                grid_param = "single isolated flat texture"
             elif category == "ui":
-                ow_prompt = f"(16-bit pixel art UI asset, retro RPG menu frame:1.4), (single isolated flat UI element, {species_name}:1.3), {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                battle_prompt = ow_prompt
+                subject = f"flat UI element, {species_name}. {dna} Features: {stage_growth}"
                 env_neg = f"{base_neg}, (characters, people, monsters, fences, structures, walls, buildings, complex scenes, multiple objects, grass, ground:1.5)"
+                grid_param = "single isolated flat UI element"
             elif category == "npc":
-                ow_prompt = f"(16-bit pixel art, GBA retro sprite:1.4), (single isolated character sprite facing forward, top-down perspective, standing still:1.3), A {species_name}. {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                battle_prompt = f"(16-bit pixel art, visual novel portrait:1.4), (large detailed character portrait, holding a pokeball, trainer battle pose:1.3), A {species_name}. {dna} Features: {stage_growth}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
+                subject = f"A {species_name}. {dna} Features: {stage_growth}"
                 env_neg = base_neg
+                grid_param = "3x4 walking animation grid"
             else:
                 if stage == "baby" or paradigm == "single":
                     subject = f"A {stage if stage != 'default' else ''} {species_name}. {dna} Growth stage features: {stage_growth}."
                 else:
                     subject = f"An evolved {stage} {species_name}. Exactly the same species. Maintain identical colors and markings. Increase age and maturity. Growth stage features: {stage_growth}. {dna}"
-                ow_prompt = f"(16-bit pixel art, GBA pokemon sprite:1.4), (single isolated character sprite facing forward, top-down perspective, standing still:1.3), {subject}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
-                battle_prompt = f"(16-bit pixel art, pokemon sprite:1.4), (large detailed front-facing monster battle sprite, classic RPG monster design:1.3), {subject}, (pure solid white background, empty background:1.5), (flat pixel colors, crisp aliased edges, no gradients:1.2)"
                 env_neg = base_neg
+                grid_param = "3x4 walking animation grid"
+                
+            ow_prompt = f"(masterpiece, best quality:1.2), 2D top-down pixel art, 16-bit RPG sprite sheet, {grid_param}, {subject}, dark overtones, deep charcoal shadows, pitch black outlines, stark white highlights, (electric royal purple accents:1.3), (neon green magic:1.1), crimson red details, flat lighting, strict pixel grid, limited indexed color palette, clear background, retro video game asset"
+            battle_prompt = ow_prompt
 
             print(f"Prompt: {ow_prompt}")
             
@@ -206,9 +217,11 @@ class AssetStudio:
                 slug = f"{species_name}-{stage}"
             
             ow_sprite = self.process_ow_sprite(image)
+            ow_sprite = self.quantize_image(ow_sprite, colors=32)
             ow_sprite.save(os.path.join(ow_dir, f"{slug}-ow.png"))
             
             battle_sprite = self.process_battle_sprite(battle_image)
+            battle_sprite = self.quantize_image(battle_sprite, colors=32)
             battle_sprite.save(os.path.join(battle_dir, f"{slug}-sheet.png"))
             
         print("\nSaving genome metadata...")
