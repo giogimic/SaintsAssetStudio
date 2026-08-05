@@ -67,7 +67,7 @@ export default function App() {
     npc: {
       title: 'Characters & NPCs',
       description: 'Generates 3x4 walking animation sprite sheets for humanoid characters.',
-      goodUrl: 'https://raw.githubusercontent.com/Tuxemon/Tuxemon/development/mods/tuxemon/gfx/sprites/battle/trainer_f-sheet.png',
+      goodUrl: '/game-assets/npc/portrait/common_older_italian_man-sheet.png',
       goodDesc: '3x4 grid walking animation, readable face, strict pixel grid.',
       badDesc: 'Deformed proportions, extra arms, photorealism, missing frames.'
     },
