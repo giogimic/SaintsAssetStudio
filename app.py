@@ -141,72 +141,74 @@ threading.Thread(target=quest_worker, daemon=True).start()
 
 # --- ELEMENT DICTIONARY ---
 ELEMENT_DICTIONARY = {
-    "Solar": "radiant sunlight, glowing plasma, fiery solar flares, bright golden energy",
-    "Hydro": "flowing water, liquid body, splashing droplets, ocean waves, aquatic features",
-    "Bio": "overgrown vines, toxic sludge, mutated organic matter, poisonous spores, natural plantlife",
-    "Volt": "crackling electricity, sparking static, lightning bolts, bright neon yellow energy",
-    "Geo": "cracked jagged rocks, heavy boulders, floating stones, dust and earth, crystalline minerals",
-    "Cryo": "freezing frost, sharp ice crystals, snowy mist, frigid icy aura",
-    "Aero": "swirling wind, transparent gusts of air, floating clouds, cyclone aura, breeze",
-    "Cyber": "glowing neon circuits, metallic robotic parts, holographic glitching projections, sci-fi mechanical armor",
+    "Fire": "(composed of glowing flames:1.3), burning embers, intense heat distortion, smoky aura",
+    "Water": "(composed of splashing water:1.3), liquid body, ocean waves, dripping wet",
+    "Earth": "(composed of rocky boulders:1.3), cracked stone, floating pebbles, mossy dirt",
+    "Electric": "(crackling electricity:1.3), lightning bolts, static shock aura, neon sparks",
+    "Holy": "(blinding holy light:1.3), angelic glowing halo, golden divine rays",
+    "Dark": "(pitch black shadow matter:1.3), swirling void energy, purple dark magic aura",
+    "Ice": "(crystalline ice spikes:1.3), freezing frost breath, glowing blue cold aura",
+    "Nature": "(overgrown with vines and leaves:1.3), blooming flowers, wooden branches",
+    "Aero": "(swirling wind cyclone:1.3), transparent gusts of air, floating clouds",
+    "Cyber": "(glowing neon circuits:1.3), metallic robotic parts, holographic glitching projections, sci-fi mechanical armor",
     "None": "normal typical form, standard physical traits, classic RPG monster design"
 }
 
 TEMPERAMENT_DICTIONARY = {
-    "Aggressive": "fierce, hostile, sharp edges, predatory stance, baring teeth or weapons",
-    "Playful": "cute, friendly, round shapes, bouncy posture, cheerful expression",
-    "Sleepy": "lazy, drooping features, relaxed posture, closed eyes, resting",
-    "Majestic": "noble, proud, elegant posture, divine aura, beautiful flowing features",
-    "Derpy": "goofy, asymmetrical eyes, silly expression, confused posture, goofy smile",
+    "Aggressive": "(fierce, hostile, sharp edges:1.2), predatory stance, baring teeth or weapons",
+    "Playful": "(cute, friendly, round shapes:1.2), bouncy posture, cheerful expression",
+    "Sleepy": "(lazy, drooping features:1.2), relaxed posture, closed eyes, resting",
+    "Majestic": "(noble, proud, elegant posture:1.2), divine aura, beautiful flowing features",
+    "Derpy": "(goofy, asymmetrical eyes, silly expression:1.2), confused posture, goofy smile",
     "None": ""
 }
 
 RARITY_DICTIONARY = {
     "Common": "simple design, basic features, matte colors, standard look",
-    "Rare": "complex design, glowing accents, ornamental details, vibrant colors",
-    "Epic": "highly detailed, dramatic aura, floating particles, ornate armor or patterns",
-    "Legendary": "god-like appearance, massive glowing energy, over-the-top intricate details, ethereal lighting",
+    "Rare": "(complex design:1.2), glowing accents, ornamental details, vibrant colors",
+    "Epic": "(highly detailed, dramatic aura:1.3), floating particles, ornate armor or patterns",
+    "Legendary": "(god-like appearance, massive glowing energy, over-the-top intricate details:1.4), ethereal lighting",
     "None": ""
 }
 
 CLASS_DICTIONARY = {
-    "Warrior": "heavy armor, strong posture, martial prowess, carrying weapons",
-    "Mage": "flowing robes, holding staff or orb, mystical aura, casting pose",
-    "Rogue": "dark leather armor, hidden face, dual daggers, crouched stealthy posture",
-    "Villager": "simple peasant clothes, carrying tools, humble posture, ordinary",
+    "Warrior": "(heavy armor, martial prowess:1.2), strong posture, carrying weapons",
+    "Mage": "(flowing robes, holding staff or orb:1.2), mystical aura, casting pose",
+    "Rogue": "(dark leather armor, hidden face:1.2), dual daggers, crouched stealthy posture",
+    "Villager": "(simple peasant clothes:1.2), carrying tools, humble posture, ordinary",
     "None": ""
 }
 
 BIOME_DICTIONARY = {
-    "Forest": "overgrown with moss and vines, sitting in lush green grass, surrounded by leaves",
-    "Volcano": "resting on cracked lava rock, glowing embers, charred scorched ground",
-    "Cybercity": "resting on metal grates, neon underglow, cyberpunk city debris",
-    "Graveyard": "resting on dead soil, surrounded by bone fragments, eerie mist rolling over it",
+    "Forest": "(overgrown with moss and vines:1.2), sitting in lush green grass, surrounded by leaves",
+    "Volcano": "(resting on cracked lava rock:1.2), glowing embers, charred scorched ground",
+    "Cybercity": "(resting on metal grates:1.2), neon underglow, cyberpunk city debris",
+    "Graveyard": "(resting on dead soil:1.2), surrounded by bone fragments, eerie mist rolling over it",
     "None": ""
 }
 
 MATERIAL_DICTIONARY = {
-    "Wood": "wooden textures, bark, lumber, branches",
-    "Stone": "stone textures, rock, cobblestone, granite",
-    "Cybernetic": "metal, glowing neon circuits, cyberpunk, futuristic tech",
-    "Crystal": "glowing crystals, jagged minerals, translucent gems, magical resonance",
+    "Wood": "(wooden textures, bark:1.2), lumber, branches",
+    "Stone": "(stone textures, rock:1.2), cobblestone, granite",
+    "Cybernetic": "(metal, glowing neon circuits:1.3), cyberpunk, futuristic tech",
+    "Crystal": "(glowing crystals, jagged minerals:1.3), translucent gems, magical resonance",
     "None": ""
 }
 
 MONSTER_CLASS_DICTIONARY = {
-    "Beast": "feral beast, animalistic, fur, claws, natural predator",
-    "Undead": "undead, skeletal, rotting flesh, ghostly aura, necro energy",
-    "Construct": "golem, artificial construct, mechanical parts, animated statue",
-    "Aberration": "eldritch aberration, tentacles, multiple eyes, alien, twisted biology",
-    "Dragonkin": "dragonkin, scales, reptilian, horns, draconic features",
+    "Beast": "(feral beast, animalistic:1.2), fur, claws, natural predator",
+    "Undead": "(undead, skeletal, rotting flesh:1.3), ghostly aura, necro energy",
+    "Construct": "(golem, artificial construct:1.3), mechanical parts, animated statue",
+    "Aberration": "(eldritch aberration, tentacles, multiple eyes:1.4), alien, twisted biology",
+    "Dragonkin": "(dragonkin, scales, reptilian:1.3), horns, draconic features",
     "None": ""
 }
 
 HABITAT_DICTIONARY = {
-    "Deep Caverns": "subterranean, dark, bioluminescent fungus, rocky adaptations",
-    "Cursed Forest": "twisted roots, dead leaves, shadow magic, gloomy, eerie",
-    "Volcanic Ashlands": "ash-covered, ember glow, heat distortion, blackened scales",
-    "Frozen Peaks": "ice crystals, thick white fur, frost aura, snowy",
+    "Deep Caverns": "(subterranean, dark, bioluminescent fungus:1.2), rocky adaptations",
+    "Cursed Forest": "(twisted roots, dead leaves, shadow magic:1.3), gloomy, eerie",
+    "Volcanic Ashlands": "(ash-covered, ember glow, heat distortion:1.3), blackened scales",
+    "Frozen Peaks": "(ice crystals, thick white fur:1.2), frost aura, snowy",
     "None": ""
 }
 
@@ -490,7 +492,8 @@ def queue_audio():
 def queue_quest():
     data = request.json
     master_lore = data.get('master_lore', '')
-    theme = data.get('theme', 'General')
+    theme = data.get('theme')
+    category = data.get('category', 'Side Quest')
     difficulty = data.get('difficulty', 'Normal')
     
     if not master_lore: return jsonify({"error": "Master Lore required"}), 400
@@ -511,6 +514,7 @@ def queue_quest():
         "temperature": temperature,
         "top_p": top_p,
         "theme": theme,
+        "category": category,
         "difficulty": difficulty,
         "output_file": output_file
     })
@@ -532,13 +536,25 @@ def clear_history():
 @app.route('/library', methods=['GET'])
 def get_library():
     library = []
-    folders_to_scan = ['creatures', 'world-monsters', 'npc', 'environment', 'ui']
+    folders_to_scan = ['creatures', 'world-monsters', 'npc', 'environment', 'ui', 'audio', 'quests']
     
     for category in folders_to_scan:
         cat_dir = os.path.join('public', 'game-assets', category)
         if not os.path.exists(cat_dir):
             continue
             
+        if category in ['audio', 'quests']:
+            files = glob.glob(os.path.join(cat_dir, '*.*'))
+            for f in files:
+                basename = os.path.basename(f)
+                library.append({
+                    "species": basename,
+                    "category": category,
+                    "paradigm": category,
+                    "default": f"/game-assets/{category}/{basename}"
+                })
+            continue
+
         genome_files = glob.glob(os.path.join(cat_dir, '*_genome.json'))
         
         for gf in genome_files:
@@ -580,9 +596,9 @@ def get_library():
                         "metadata": metadata,
                         "default": f"/game-assets/{category}/{species}-ow.png"
                     })
-            
+                    
     # Sort library alphabetically
-    library.sort(key=lambda x: x["species"])
+    library.sort(key=lambda x: x.get("title", x["species"]))
     return jsonify(library)
 
 @app.route('/delete', methods=['POST'])
@@ -598,23 +614,36 @@ def delete_creature():
     # Determine battle dir based on category
     if category == 'npc':
         battle_dir = os.path.join('public', 'game-assets', 'npc', 'portrait')
+    elif category == 'audio':
+        battle_dir = None
+    elif category == 'quests':
+        battle_dir = None
     elif category == 'environment':
         battle_dir = os.path.join('public', 'game-assets', 'environment', 'portrait')
     else:
         battle_dir = os.path.join('public', 'game-assets', 'monster', 'battle')
+        
+    files_to_delete = []
     
-    files_to_delete = [
-        os.path.join(cat_dir, f"{species}_genome.json"),
-        os.path.join(cat_dir, f"{species}-baby-ow.png"),
-        os.path.join(cat_dir, f"{species}-adult-ow.png"),
-        os.path.join(cat_dir, f"{species}-elder-ow.png"),
-        os.path.join(cat_dir, f"{species}-ow.png"),
-        os.path.join(battle_dir, f"{species}-baby-sheet.png"),
-        os.path.join(battle_dir, f"{species}-adult-sheet.png"),
-        os.path.join(battle_dir, f"{species}-elder-sheet.png"),
-        os.path.join(battle_dir, f"{species}-sheet.png")
-    ]
-    
+    if category == 'audio':
+        files_to_delete.append(os.path.join(cat_dir, species))
+    elif category == 'quests':
+        files_to_delete.append(os.path.join(cat_dir, species))
+    else:
+        files_to_delete = [
+            os.path.join(cat_dir, f"{species}_genome.json"),
+            os.path.join(cat_dir, f"{species}-baby-ow.png"),
+            os.path.join(cat_dir, f"{species}-adult-ow.png"),
+            os.path.join(cat_dir, f"{species}-elder-ow.png"),
+            os.path.join(cat_dir, f"{species}-ow.png"),
+            os.path.join(battle_dir, f"{species}-baby-sheet.png") if battle_dir else None,
+            os.path.join(battle_dir, f"{species}-adult-sheet.png") if battle_dir else None,
+            os.path.join(battle_dir, f"{species}-elder-sheet.png") if battle_dir else None,
+            os.path.join(battle_dir, f"{species}-sheet.png") if battle_dir else None
+        ]
+        
+    # Remove None values
+    files_to_delete = [f for f in files_to_delete if f]
     deleted_count = 0
     for file in files_to_delete:
         if os.path.exists(file):
