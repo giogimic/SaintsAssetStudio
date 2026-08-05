@@ -25,6 +25,12 @@ Write-Host "[INFO] Installing dependencies from requirements.txt..." -Foreground
 Write-Host "[INFO] Pre-caching HuggingFace Model Weights (This may take a few minutes)..." -ForegroundColor Cyan
 .\.venv\Scripts\python.exe download_model.py
 
+# 5. Setup Frontend
+Write-Host "[INFO] Installing Frontend Dependencies..." -ForegroundColor Cyan
+Set-Location ui
+npm install
+Set-Location ..
+
 Write-Host "===================================="
 Write-Host " Setup Complete! Starting server..." -ForegroundColor Green
 Write-Host "===================================="

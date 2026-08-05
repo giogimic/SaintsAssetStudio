@@ -12,6 +12,10 @@ if exist ".venv_cuda\Scripts\python.exe" (
 :: Start the Vite React frontend in a new command window
 echo Starting Frontend...
 cd ui
+if not exist "node_modules\" (
+    echo Installing Frontend Dependencies...
+    call npm install
+)
 start "Frontend UI" cmd /k "npm run dev"
 cd ..
 
