@@ -1,0 +1,25 @@
+{
+    "species": "common_older_italian_man",
+    "category": "npc",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Common",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Common  older italian man character",
+    "locked_features": "simple design, basic features, matte colors, standard look",
+    "stages": {
+        "default": {
+            "growth": "fully developed, simple design, basic features, matte colors, standard look"
+        }
+    },
+    "generation_meta": {
+        "seed": 517455,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": "16-bit pixel art, GBA pokemon style, retro RPG game asset, flat pixel colors, limited palette, crisp pixel borders"
+    }
+}

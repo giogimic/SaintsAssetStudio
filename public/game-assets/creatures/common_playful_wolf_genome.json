@@ -1,0 +1,31 @@
+{
+    "species": "common_playful_wolf",
+    "category": "creatures",
+    "paradigm": "lifecycle",
+    "metadata": {
+        "element": "None",
+        "temperament": "Playful",
+        "rarity": "Common",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Common Playful  wolf creature",
+    "locked_features": "composed of normal typical form, standard physical traits, classic RPG monster design, cute, friendly, round shapes, bouncy posture, cheerful expression, simple design, basic features, matte colors, standard look",
+    "stages": {
+        "baby": {
+            "growth": "small, cute, undeveloped version, cute, friendly, round shapes, bouncy posture, cheerful expression, simple design, basic features, matte colors, standard look, round proportions"
+        },
+        "adult": {
+            "growth": "large, fully developed, composed of normal typical form, standard physical traits, classic RPG monster design, cute, friendly, round shapes, bouncy posture, cheerful expression, simple design, basic features, matte colors, standard look, combat ready stance"
+        },
+        "elder": {
+            "growth": "massive, towering, ancient, radiating intense power, composed of normal typical form, standard physical traits, classic RPG monster design, cute, friendly, round shapes, bouncy posture, cheerful expression, simple design, basic features, matte colors, standard look, majestic and imposing"
+        }
+    },
+    "generation_meta": {
+        "seed": 525069,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

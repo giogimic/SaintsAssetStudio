@@ -1,0 +1,25 @@
+{
+    "species": "beast_cursed_forest_wolf",
+    "category": "world-monsters",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Cursed Forest Beast wolf wild monster",
+    "locked_features": "feral beast, animalistic, fur, claws, natural predator, adapted for twisted roots, dead leaves, shadow magic, gloomy, eerie",
+    "stages": {
+        "default": {
+            "growth": "fully developed wild monster, feral beast, animalistic, fur, claws, natural predator, adapted for twisted roots, dead leaves, shadow magic, gloomy, eerie"
+        }
+    },
+    "generation_meta": {
+        "seed": 987431,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": "16-bit pixel art, GBA pokemon style, retro RPG game asset, flat pixel colors, limited palette, crisp pixel borders"
+    }
+}

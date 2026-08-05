@@ -1,0 +1,25 @@
+{
+    "species": "construct_frozen_peaks_wolf",
+    "category": "world-monsters",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "Playful",
+        "rarity": "Common",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Frozen Peaks Construct wolf wild monster",
+    "locked_features": "golem, artificial construct, mechanical parts, animated statue, adapted for ice crystals, thick white fur, frost aura, snowy",
+    "stages": {
+        "default": {
+            "growth": "fully developed wild monster, golem, artificial construct, mechanical parts, animated statue, adapted for ice crystals, thick white fur, frost aura, snowy"
+        }
+    },
+    "generation_meta": {
+        "seed": 430436,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

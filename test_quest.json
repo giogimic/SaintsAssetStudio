@@ -1,0 +1,6 @@
+{
+  "master_lore": "test lore",
+  "theme": "test theme",
+  "difficulty": "test diff",
+  "output_file": "test_out.json"
+}

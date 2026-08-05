@@ -1,0 +1,25 @@
+{
+    "species": "path_of_dirt",
+    "category": "environment",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "Common",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "path of dirt prop",
+    "locked_features": "standard design",
+    "stages": {
+        "default": {
+            "growth": "static environment prop, standard design"
+        }
+    },
+    "generation_meta": {
+        "seed": 188963,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": "16-bit pixel art, GBA pokemon style, retro RPG game asset, flat pixel colors, limited palette, crisp pixel borders"
+    }
+}

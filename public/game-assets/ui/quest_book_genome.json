@@ -1,0 +1,25 @@
+{
+    "species": "quest_book",
+    "category": "ui",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "None",
+        "rarity": "None",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "quest book ui element",
+    "locked_features": "standard design",
+    "stages": {
+        "default": {
+            "growth": "static UI element, standard design"
+        }
+    },
+    "generation_meta": {
+        "seed": 417832,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

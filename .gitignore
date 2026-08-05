@@ -1,0 +1,25 @@
+# Environments
+.env
+.venv
+.venv_cuda
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Logs
+*.log
+
+# Generated Runtime Files
+temp_genome.json
+
+# If you want to keep the repository purely source code and ignore all generated art:
+# Uncomment the lines below to ignore generated game assets.
+# public/game-assets/creatures/*.png
+# public/game-assets/creatures/*.json
+# public/game-assets/monster/battle/*.png

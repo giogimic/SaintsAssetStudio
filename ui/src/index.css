@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-saints-red: #ff2a2a;
+  --color-saints-dark: #0a0a0c;
+  --color-saints-panel: rgba(18, 18, 22, 0.7);
+  --color-saints-border: rgba(255, 42, 42, 0.3);
+}
+
+body {
+  background-color: var(--color-saints-dark);
+  background-image: 
+    radial-gradient(circle at top right, rgba(255, 42, 42, 0.05), transparent 40%),
+    radial-gradient(circle at bottom left, rgba(42, 42, 255, 0.05), transparent 40%);
+  background-attachment: fixed;
+  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-saints-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-saints-red);
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--color-saints-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 0.5rem;
+}
+
+/* Neon Glow Button */
+.btn-neon {
+  background-color: transparent;
+  border: 1px solid var(--color-saints-red);
+  color: var(--color-saints-red);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(255, 42, 42, 0.1), inset 0 0 5px rgba(255, 42, 42, 0.1);
+}
+.btn-neon:hover:not(:disabled) {
+  background-color: var(--color-saints-red);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 42, 42, 0.6), inset 0 0 10px rgba(255, 42, 42, 0.4);
+  text-shadow: 0 0 2px rgba(255,255,255,0.8);
+}
+.btn-neon:disabled {
+  border-color: #333;
+  color: #555;
+  box-shadow: none;
+}
+
+/* Active Tab Styling */
+.tab-active-neon {
+  border-bottom: 3px solid var(--color-saints-red) !important;
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(255, 42, 42, 0.6);
+  background: linear-gradient(to top, rgba(255, 42, 42, 0.1) 0%, transparent 100%) !important;
+}
+
+/* Form inputs */
+.input-glass, .select-glass, .textarea-glass {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+}
+.input-glass:focus, .select-glass:focus, .textarea-glass:focus {
+  outline: none;
+  border-color: var(--color-saints-red);
+  box-shadow: 0 0 8px rgba(255, 42, 42, 0.3);
+}
+
+/* Library Image Hover */
+.asset-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.asset-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-saints-red);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(255, 42, 42, 0.2);
+}

@@ -1,0 +1,25 @@
+{
+    "species": "undead_deep_caverns_wolf",
+    "category": "world-monsters",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "Playful",
+        "rarity": "Common",
+        "class": "None",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Deep Caverns Undead wolf wild monster",
+    "locked_features": "undead, skeletal, rotting flesh, ghostly aura, necro energy, adapted for subterranean, dark, bioluminescent fungus, rocky adaptations",
+    "stages": {
+        "default": {
+            "growth": "fully developed wild monster, undead, skeletal, rotting flesh, ghostly aura, necro energy, adapted for subterranean, dark, bioluminescent fungus, rocky adaptations"
+        }
+    },
+    "generation_meta": {
+        "seed": 571098,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

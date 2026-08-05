@@ -1,0 +1,25 @@
+{
+    "species": "cybernetic_forest_path",
+    "category": "environment",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "Playful",
+        "rarity": "None",
+        "class": "Mage",
+        "biome": "Forest",
+        "material": "Cybernetic"
+    },
+    "core_identity": "Cybernetic Forest path prop",
+    "locked_features": "metal, glowing neon circuits, cyberpunk, futuristic tech, overgrown with moss and vines, sitting in lush green grass, surrounded by leaves",
+    "stages": {
+        "default": {
+            "growth": "static environment prop, metal, glowing neon circuits, cyberpunk, futuristic tech, overgrown with moss and vines, sitting in lush green grass, surrounded by leaves"
+        }
+    },
+    "generation_meta": {
+        "seed": 36603,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "species": "mage_wolf",
+    "category": "npc",
+    "paradigm": "single",
+    "metadata": {
+        "element": "None",
+        "temperament": "Playful",
+        "rarity": "None",
+        "class": "Mage",
+        "biome": "None",
+        "material": "None"
+    },
+    "core_identity": "Mage wolf character",
+    "locked_features": "flowing robes, holding staff or orb, mystical aura, casting pose",
+    "stages": {
+        "default": {
+            "growth": "fully developed, flowing robes, holding staff or orb, mystical aura, casting pose"
+        }
+    },
+    "generation_meta": {
+        "seed": 125720,
+        "model": "Lykon/dreamshaper-8",
+        "style_token": ""
+    }
+}
