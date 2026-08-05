@@ -21,8 +21,22 @@ export default function App() {
   
   // Quest State
   const [questLore, setQuestLore] = useState('');
-  const [questTheme, setQuestTheme] = useState('General');
+  const [questTheme, setQuestTheme] = useState('');
+  const [questCategory, setQuestCategory] = useState('Side Quest');
   const [questDiff, setQuestDiff] = useState('Normal');
+
+  const generateRandomQuestTheme = () => {
+    const themes = [
+      "A cursed artifact in the Whispering Woods", 
+      "Assassination of a corrupt noble", 
+      "Finding the lost heir of the Crystal Kingdom", 
+      "Defending a merchant caravan from cyber-bandits", 
+      "Investigating a strange sickness in the neon slums",
+      "Retrieving a stolen experimental AI core",
+      "Escorting a defector across the radioactive wasteland"
+    ];
+    setQuestTheme(themes[Math.floor(Math.random() * themes.length)]);
+  };
 
   const [libraryCat, setLibraryCat] = useState('all');
   const [assets, setAssets] = useState<any[]>([]);
@@ -298,7 +312,7 @@ export default function App() {
       const res = await fetch('/queue_quest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ master_lore: questLore, theme: questTheme, difficulty: questDiff, max_tokens: maxTokens, temperature: temperature, top_p: topP })
+        body: JSON.stringify({ master_lore: questLore, theme: questTheme, category: questCategory, difficulty: questDiff, max_tokens: maxTokens, temperature: temperature, top_p: topP })
       });
       const data = await res.json();
       if (data.status === 'queued') {
@@ -608,19 +622,34 @@ export default function App() {
                   <textarea className="textarea textarea-glass h-32 w-full border-[var(--color-saints-red)]" placeholder="e.g. The world is a ruined cyberpunk wasteland. The player is a cybernetically enhanced courier..." value={questLore} onChange={e => setQuestLore(e.target.value)} required></textarea>
                 </div>
                 
-                <div className="form-control mb-4">
-                  <label className="label"><span className="label-text font-bold text-white">Quest Theme</span></label>
-                  <input type="text" className="input input-glass w-full" placeholder="e.g. Retrieve a stolen hard drive" value={questTheme} onChange={e => setQuestTheme(e.target.value)} required />
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-bold text-white">Category</span></label>
+                    <select className="select select-glass w-full" value={questCategory} onChange={e => setQuestCategory(e.target.value)}>
+                      <option value="Main Story">Main Story</option>
+                      <option value="Side Quest">Side Quest</option>
+                      <option value="Item Lore">Item Lore</option>
+                      <option value="World Event">World Event</option>
+                      <option value="NPC Dialogue">NPC Dialogue</option>
+                    </select>
+                  </div>
+                  <div className="form-control">
+                    <label className="label"><span className="label-text font-bold text-white">Difficulty</span></label>
+                    <select className="select select-glass w-full" value={questDiff} onChange={e => setQuestDiff(e.target.value)}>
+                      <option value="Trivial">Trivial</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Hard">Hard</option>
+                      <option value="Legendary">Legendary</option>
+                    </select>
+                  </div>
                 </div>
-                
-                <div className="form-control mb-6">
-                  <label className="label"><span className="label-text font-bold text-white">Difficulty</span></label>
-                  <select className="select select-glass w-full" value={questDiff} onChange={e => setQuestDiff(e.target.value)}>
-                    <option value="Trivial">Trivial</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Hard">Hard</option>
-                    <option value="Legendary">Legendary</option>
-                  </select>
+
+                <div className="form-control mb-4">
+                  <label className="label flex justify-between">
+                    <span className="label-text font-bold text-white">Quest Theme</span>
+                    <button type="button" onClick={generateRandomQuestTheme} className="text-xs text-[var(--color-saints-red)] hover:text-white transition-colors">Generate Random</button>
+                  </label>
+                  <input type="text" className="input input-glass w-full" placeholder="e.g. Retrieve a stolen hard drive" value={questTheme} onChange={e => setQuestTheme(e.target.value)} required />
                 </div>
                 <div className="collapse collapse-arrow bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] mb-4">
                   <input type="checkbox" checked={showAdvanced} onChange={(e) => setShowAdvanced(e.target.checked)} /> 
@@ -711,6 +740,8 @@ export default function App() {
                 <button className={`tab font-heading ${libraryCat === 'world-monsters' ? 'tab-active-neon' : 'text-gray-400'}`} onClick={() => setLibraryCat('world-monsters')}>MONSTERS</button>
                 <button className={`tab font-heading ${libraryCat === 'npc' ? 'tab-active-neon' : 'text-gray-400'}`} onClick={() => setLibraryCat('npc')}>CHARACTERS</button>
                 <button className={`tab font-heading ${libraryCat === 'environment' ? 'tab-active-neon' : 'text-gray-400'}`} onClick={() => setLibraryCat('environment')}>ENVIRONMENT</button>
+                <button className={`tab font-heading ${libraryCat === 'audio' ? 'tab-active-neon' : 'text-gray-400'}`} onClick={() => setLibraryCat('audio')}>AUDIO</button>
+                <button className={`tab font-heading ${libraryCat === 'quests' ? 'tab-active-neon' : 'text-gray-400'}`} onClick={() => setLibraryCat('quests')}>QUESTS</button>
               </div>
 
               {libraryCat === 'all' && !currentFolder && (
@@ -735,6 +766,7 @@ export default function App() {
                 <div className="mb-8">
                   {(() => {
                     const info = categoryInfo[libraryCat as keyof typeof categoryInfo];
+                    if (!info) return null;
                     return (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
                         <div className="bg-success/10 p-5 rounded-xl border border-success/30 flex flex-col">
@@ -823,7 +855,18 @@ export default function App() {
                         </div>
 
                         <figure className="bg-black/60 p-4 h-32 flex items-center justify-center border-b border-[rgba(255,255,255,0.05)]">
-                          <img src={asset.default || asset.baby} alt={asset.species} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
+                          {asset.category === 'audio' ? (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded p-2">
+                              <audio controls src={asset.default} className="w-full max-w-[200px] h-10" />
+                            </div>
+                          ) : asset.category === 'quests' ? (
+                            <div className="w-full h-full p-2 overflow-hidden text-[10px] font-mono text-gray-400 leading-tight">
+                              <div className="font-bold text-white mb-1 truncate">{asset.quest_data?.title || 'Quest File'}</div>
+                              {asset.quest_data?.description?.substring(0, 100)}...
+                            </div>
+                          ) : (
+                            <img src={asset.default || asset.baby} alt={asset.species} className="max-h-full max-w-full object-contain [image-rendering:pixelated]" />
+                          )}
                         </figure>
                         <div className="p-3">
                           <h3 className="font-bold text-xs truncate mb-1 text-gray-200">{asset.species.replace(/_/g, ' ')}</h3>
@@ -974,7 +1017,44 @@ export default function App() {
             </div>
             
             <div className="bg-black/50 p-6 flex items-center justify-center border border-white/5 min-h-[400px]">
-              <img src={lightboxAsset.default || lightboxAsset.adult || lightboxAsset.baby} className="max-h-[500px] object-contain [image-rendering:pixelated]" alt="Asset" />
+              {lightboxAsset.category === 'audio' ? (
+                <div className="flex flex-col items-center gap-4 w-full">
+                  <div className="w-32 h-32 rounded-full bg-[var(--color-saints-red)]/20 border-4 border-[var(--color-saints-red)] flex items-center justify-center">
+                    <svg className="w-16 h-16 text-[var(--color-saints-red)]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+                    </svg>
+                  </div>
+                  <audio controls src={lightboxAsset.default} className="w-full max-w-md" autoPlay />
+                </div>
+              ) : lightboxAsset.category === 'quests' ? (
+                <div className="w-full max-w-3xl h-full overflow-y-auto text-left font-mono">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-white mb-2">{lightboxAsset.quest_data?.title || 'Untitled Quest'}</h3>
+                    <p className="text-gray-300">{lightboxAsset.quest_data?.description}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-[var(--color-saints-red)] font-bold mb-2">Objectives</h4>
+                      <ul className="list-disc pl-5 text-gray-300">
+                        {lightboxAsset.quest_data?.objectives?.map((obj: string, i: number) => <li key={i}>{obj}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-[var(--color-saints-red)] font-bold mb-2">Rewards</h4>
+                      <ul className="list-disc pl-5 text-gray-300">
+                        {lightboxAsset.quest_data?.rewards?.map((reward: string, i: number) => <li key={i}>{reward}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                  {lightboxAsset.quest_data?.dialogue && (
+                    <div className="mt-6 p-4 border-l-4 border-[var(--color-saints-red)] bg-black/40">
+                      <p className="text-gray-200 italic">"{lightboxAsset.quest_data.dialogue}"</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <img src={lightboxAsset.default || lightboxAsset.adult || lightboxAsset.baby} className="max-h-[500px] object-contain [image-rendering:pixelated]" alt="Asset" />
+              )}
             </div>
           </div>
         </div>
